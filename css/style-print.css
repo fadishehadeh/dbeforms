@@ -1,0 +1,78 @@
+ 
+@font-face {
+  font-family:TrajanPro;
+  src:  url('http://www.barwabank.com/media/barwabank/styleassets/fonts/trajanpro-regular-webfont.eot?') format('embedded-opentype'),
+        url('http://www.barwabank.com/media/barwabank/styleassets/fonts/trajanpro-regular-webfont.woff') format('woff'),
+        url('http://www.barwabank.com/media/barwabank/styleassets/fonts/trajanpro-regular-webfont.ttf') format('truetype');
+  }
+
+body{ margin:0; padding:0; background:#ffffff; margin-top:150px;}
+
+img{ border:none;}
+
+#wrapper{ position:relative;
+  text-align: center;  }
+
+#insidewraper{  
+margin: 0 auto; width:1000px; text-align:center;
+  }
+  
+    #header{  
+width:1000px; height:210px;  text-align:center; background:url(../images/logo.jpg) center no-repeat; position:relative; 
+-webkit-print-color-adjust: exact; 
+  }
+  
+    #title{  
+width:1000px; height:66px;  text-align:center; background:#bf863f; -webkit-print-color-adjust: exact; display:block;
+  }
+  
+  #title h1{ margin:0; padding:0; font-family:TrajanPro; font-size:17px; color:#ffffff; display:block; padding-top:20px;}
+  
+  
+   #footer{  
+width:1000px; height:210px;  text-align: left; position:relative }
+  
+  #footer img{  
+right:1px; position:absolute; top:50px; 
+  }
+  
+  #first { width:1000px; height:51px; text-align:left;}
+  #first div { padding-top:15px;}
+  #second { width:1000px; height:600px; border: #bf863f solid 1px; text-align:left;}
+  
+  input { width:200px; height:17px; background:#ffffff;border: #bf863f solid 1px;color:#bf863f; -webkit-print-color-adjust: exact;}
+   select { width:200px; height:20px; background:#ffffff;border: #bf863f solid 1px;color:#bf863f; -webkit-print-color-adjust: exact;}
+  label {font-family:'Tahoma'; font-size:14px; color:#bf863f; margin-right:10px; width:250px; display:block; float:left}
+   .small{ width:200px;}
+   
+    a {font-family:'Tahoma'; font-size:14px; color:#bf863f; text-decoration:none;}
+   
+   #print a{font-family:'Tahoma'; font-size:14px; color:#bf863f;}
+
+.bold{ font-weight:bold;}
+
+#issue{ width:1000px; height:50px;}
+
+#issue div{ margin-left:30px; margin-top:10px;}
+
+ #title{  
+width:1000px; height:66px;  text-align:center; background:#bf863f; -webkit-print-color-adjust: exact;
+  }
+  #payment { text-align:left; margin-top:30px;}
+   #payment div{ margin-left:30px; margin-top:10px;}
+    #title2{  
+width:1000px; height:46px;  text-align:left; background:#bf863f; -webkit-print-color-adjust: exact;margin-left:0px !important;margin-top:0px !important; 
+  }
+  #title2 h1{ margin-left:30px; padding:0; font-family:TrajanPro; font-size:15px; font-weight:normal; color:#ffffff; display:block; padding-top:15px;}
+  
+ 
+  
+   #payment span{ display:block; margin-bottom:12px;}
+   .left{ margin-left:0px !important; margin-top:0px; width:500px; float:left; }
+   
+  
+    #title3{  
+width:500px; height:46px;  text-align:left; background:#bf863f;-webkit-print-color-adjust: exact; margin-left:0px !important;margin-top:0px !important; 
+  }
+  #title3 h1{ margin-left:30px; padding:0; font-family:TrajanPro; font-size:15px; font-weight:normal; color:#ffffff; display:block; padding-top:15px;}
+  

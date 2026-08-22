@@ -1,0 +1,1836 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=10" />
+<link rel="stylesheet" href="css/style2.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="default_zebra.css" type="text/css" media="screen"/>
+<script src="jquery.min.js" language="javascript" type="text/javascript"></script>
+<script type="text/javascript" src="toword.js"></script>
+<script type="text/javascript" src="zebra_datepicker.js"></script>
+
+
+<!-- Add fancyBox main JS and CSS files -->
+<script type="text/javascript" src="source/jquery.fancybox.js?v=2.1.5"></script>
+<link rel="stylesheet" type="text/css" href="source/jquery.fancybox.css?v=2.1.5" media="screen" />
+<style>
+.custom-tooltip {
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+.custom-tooltip .tooltiptext {
+  visibility: hidden;
+  width: 430px;
+  background-color: #fff;
+  color: #223570;
+  text-align: left;
+  border: 1px solid #ccc;
+  padding: 10px;
+  position: absolute;
+  z-index: 100;
+  top: 150%;
+  left: -20px;
+  box-shadow: 0px 4px 8px rgba(0,0,0,0.1);
+  font-family: Arial, sans-serif;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.4;
+}
+.custom-tooltip .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 24px;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #ccc transparent;
+}
+.custom-tooltip:hover .tooltiptext {
+  visibility: visible;
+}
+</style>
+<script>
+    function check() {
+        if (document.getElementById("terms").checked == true) {
+            document.getElementById("print").style.display = 'block';
+        } else {
+            document.getElementById("print").style.display = 'none';
+        }
+
+    }
+</script>
+<script type="text/javascript">
+    // <![CDATA[
+    function iban() {
+        var x = document.getElementById("debit").value;
+
+        var static_bank_code = "BRWA";
+        var static_zeroes = "000000000";
+        var static_country_code = "QA";
+
+        var tempIBAN = static_bank_code + static_zeroes + x + static_country_code + "00";
+        var asciiIBAN = "";
+        for (i = 0; i < static_bank_code.length; i++) {
+            asciiIBAN += String(Number(static_bank_code[i].charCodeAt(0)) - 55);
+        }
+        asciiIBAN += static_zeroes + x;
+        for (i = 0; i < static_country_code.length; i++) {
+            asciiIBAN += String(Number(static_country_code[i].charCodeAt(0)) - 55);
+        }
+        asciiIBAN += "00";
+
+        var first9digitMod = Number(asciiIBAN.substring(0, 9)) % 97;
+        if (String(first9digitMod).length < 2) {
+            first9digitMod = "0" + String(first9digitMod);
+        }
+        //alert(first9digitMod);
+        var second9digitMod = Number(first9digitMod + asciiIBAN.substring(9, 16)) % 97;
+        if (String(second9digitMod).length < 2) {
+            second9digitMod = "0" + String(second9digitMod);
+        }
+        //alert(second9digitMod);
+        var third9digitMod = Number(second9digitMod + asciiIBAN.substring(16, 23)) % 97;
+        if (String(third9digitMod).length < 2) {
+            third9digitMod = "0" + String(third9digitMod);
+        }
+        //alert(third9digitMod);
+        var fourth9digitMod = Number(third9digitMod + asciiIBAN.substring(23, 30)) % 97;
+        if (String(fourth9digitMod).length < 2) {
+            fourth9digitMod = "0" + String(fourth9digitMod);
+        }
+        //alert(fourth9digitMod);
+        var fifth9digitMod = Number(fourth9digitMod + asciiIBAN.substring(30, asciiIBAN.length)) % 97;
+        if (String(fifth9digitMod).length < 2) {
+            fifth9digitMod = "0" + String(fifth9digitMod);
+        }
+        //alert(fifth9digitMod);
+
+        var checkDigits = 98 - Number(fifth9digitMod);
+        if (String(checkDigits).length < 2) {
+            checkDigits = "0" + String(checkDigits);
+        }
+
+        //alert(checkDigits);
+
+        var validIBAN = static_country_code + checkDigits + static_bank_code + static_zeroes + x;
+
+
+        document.getElementById("ibanad").value = validIBAN;
+
+    }
+</script>
+<script>
+
+    function alphanumeric(value) {
+        return /^\w+$/i.test(value);
+    }
+
+    function validateIBAN_ACCOUNT(start) {
+        // IBAN valudation based on QAR currency and Qatar country
+        cur = $("select[name='currency']");
+        cur_val = cur.find(":selected").val();
+		
+        country = $("select[name='country']");
+        country_val = country.find(":selected").val();		
+		
+        accountType = $("select[name='acctype']");
+        bacc = $("input[name='bacc']").val();
+
+        if (cur_val == 'QAR' && country_val == 'Qatar') {
+            accountType.find("option:eq(0)").prop('selected', true);
+            accountType.prop('disabled', true);
+
+            if (typeof bacc.length != 'undefined' && eval(bacc.length) != 29) {
+	
+				if(!start)
+	                alert('The IBAN should be 29 characters long.');
+					
+                return false;
+
+            } else if (!alphanumeric(bacc)) {
+				
+				if(!start)				
+                	alert('The IBAN should only contain alphanumeric characters.');
+				
+                return false;
+            }
+        } else {
+            accountType.prop('disabled', false);
+        }
+		
+		return true;
+    }
+
+    $(document).ready(function() {		
+	    validateIBAN_ACCOUNT(true);
+		
+        $("select[name='currency'], select[name='country']").change(function() {
+            validateIBAN_ACCOUNT(false);
+        });
+
+    })
+
+
+    function validateRadio(radios) {
+        for (i = 0; i < radios.length; ++i) {
+            if (radios[i].checked) return true;
+        }
+        alert('Choose On Beneficiary or On Customer');
+        return false;
+
+    }
+
+
+    function required(inputtxt) {
+        optional_fields = ['tp'];
+
+        ele_name = $(inputtxt).attr('name');
+
+        if ($.inArray(ele_name, optional_fields) != 0) {
+            if (inputtxt.value.length == 0) {
+                alert("All fields are required!");
+                console.log(ele_name + ' is empty....');
+                inputtxt.focus();
+                return false;
+            } else {
+                return true;
+            }
+        } else {
+            return true;
+        }
+    }
+
+    function requireddate(inputtxt) {
+
+
+        if (inputtxt.value.length == 0) {
+            alert("Both start and end date reuired!");
+            inputtxt.focus();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function requireddate(inputtxt) {
+
+
+        if (inputtxt.value.length == 0) {
+            alert("Both start and end date reuired!");
+            inputtxt.focus();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    function allLetter(inputtxt) {
+        var letters = /^[A-Za-z]+$/;
+        if (inputtxt.value.match(letters)) {
+            return true;
+        } else {
+            alert("Please input alphabetical characters only");
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+
+    function allnumeric(inputtxt) {
+        var numbers = /^[0-9]+$/;
+        if (inputtxt.value.match(numbers)) {
+            return true;
+        } else {
+            alert('Please input numeric characters only');
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+    function CheckDecimal(inputtxt) {
+        var decimal = /^[-+]?[0-9]+.[0-9]+$/;
+        if (inputtxt.value.match(decimal)) {
+            return true;
+        } else {
+            alert('Please input numeric characters only');
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+    function printnow() {
+        var figures = document.application.figures;
+        //var words= document.application.words;  
+        var bname = document.application.bname;
+
+        var bacc = document.application.bacc;
+        var bbn = document.application.bbn;
+
+        var tp = document.application.tp;
+        var pp = document.application.pp;
+
+        var bctt = document.application.bctt;
+
+        var cbc = document.application.cbc;
+        var cbc1 = document.application.cbc1;
+        var ttype = $("#type-select").val();
+        var pname = document.application.pname;
+        var tel = document.application.tel;
+        var debit = document.application.debit;
+
+        var bbname = document.application.bbname;
+
+
+        if (required(figures) && CheckDecimal(figures)) {
+
+
+            if (required(bname)) {
+
+                if (required(bacc)) {
+
+					//console.log(validateIBAN_ACCOUNT());
+					if(!validateIBAN_ACCOUNT(false))
+						return false;
+
+                    if (required(bbn)) {
+
+
+
+                        if (required(tp) && required(bbname)) {
+
+                            // Validate Purpose Codes (QCB Mandate)
+                            var mainPurpose = document.getElementById("main_purpose");
+                            var subPurpose = document.getElementById("sub_purpose");
+
+                            if (!mainPurpose.value) {
+                                alert('Payment Purpose (Regulatory Requirement) is required');
+                                mainPurpose.focus();
+                                return false;
+                            }
+
+                            if (!subPurpose.value) {
+                                alert('Payment Details is required');
+                                subPurpose.focus();
+                                return false;
+                            }
+
+                            if (validateRadio(cbc)) {
+                                if (validateRadio(cbc1)) {
+
+
+                                    if (ttype == "Standing Order") {
+
+
+                                        if ($('#startdate').val() == '') {
+                                            alert('Start Date is required');
+                                            $('#startdate').focus();
+                                            return false;
+                                        }
+
+                                        if ($('#enddate').val() == '') {
+                                            alert('End Date is required');
+                                            $('#enddate').focus();
+                                            return false;
+                                        }
+                                        if ($('#paymentfreq').val() == '') {
+                                            alert('Please Choose a Payment Frequency');
+                                            $('#paymentfreq').focus();
+                                            return false;
+                                        }
+
+                                    }
+
+
+
+                                    if (required(pname)) {
+
+                                        if (required(debit) && allnumeric(debit)) {
+
+                                            if (required(tel) && allnumeric(tel)) {
+                                                //alert('correct');
+                                                return true;
+
+
+
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
+    function capitaliseFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function getwords() {
+        var str = document.getElementById('figures').value;
+
+
+        if (str.indexOf(".") == -1) {
+
+
+            var fig = parseInt(str);
+            var convfig = toWords(fig);
+
+            convfig = capitaliseFirstLetter(convfig);
+
+
+        } else {
+            var res = str.split(".");
+
+            var fig0 = parseInt(res[0]);
+            var fig1 = parseInt(res[1]);
+
+            var convfig0 = toWords(fig0);
+            var convfig1 = toWords(fig1);
+            var convfig = convfig0 + " and " + convfig1 + "DH";
+            convfig = capitaliseFirstLetter(convfig);
+        }
+
+
+        document.getElementById('words').value = convfig;
+    }
+</script>
+<script type="text/javascript" language="javascript">
+    $("document").ready(function() {
+        $('#dynamic-select').bind('change', function() { // bind change event to select
+            var url = $(this).val(); // get selected value
+            if (url != '') { // require a URL
+                window.location = url; // redirect
+            }
+            return false;
+        });
+
+        $("#type-select").bind('change', function() { // bind change event to select
+            var typo = $(this).val();
+
+            if (typo == 'Standing Order') {
+
+                $("#standing").css("display", "block");
+                $('#second').css("height", "1140px");
+            } else {
+
+                $("#standing").css("display", "none");
+                $('#second').css("height", "935px");
+            }
+
+
+        });
+
+        $('#paymentfreq').bind('change', function() { // bind change event to select
+            var url = $(this).val(); // get selected value
+
+
+
+
+            var DateDiff = {
+
+                inDays: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000));
+                },
+
+                inWeeks: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 7));
+                },
+
+                inMonths: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 31));
+                },
+
+                inYears: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 31 * 12));
+                }
+            }
+
+
+            function modiff(DisplayFrom, DisplayTo) {
+                return DisplayTo.getMonth() -
+                    DisplayFrom.getMonth() +
+                    (12 * (DisplayTo.getFullYear() - DisplayFrom.getFullYear()));
+            }
+
+
+
+
+            date1 = $('#startdate').val();
+
+            res = date1.split("-");
+            year = res[0];
+            month = res[1];
+            day = res[2];
+            var startdate = new Date(year, month, day);
+
+
+
+
+            date2 = $('#enddate').val();
+            res2 = date2.split("-");
+            year2 = res2[0];
+            month2 = res2[1];
+            day2 = res2[2];
+            var enddate = new Date(year2, month2, day2);
+
+            //var nbdays=Date.daysBetween(startdate, enddate);
+            //var nbweeks=Math.floor(nbdays/7);
+            //alert(nbweeks);
+
+
+
+
+            if (url == "Daily") {
+                //alert("<br />Number of <b>days</b>: "+DateDiff.inDays(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inDays(startdate, enddate)) + 1;
+            } else if (url == "Weekly") {
+                //alert("<br />Number of <b>weeks</b> : "+DateDiff.inWeeks(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inWeeks(startdate, enddate)) + 1;
+            } else if (url == "Monthly") {
+                //alert("<br />Number of <b>months</b> : "+DateDiff.inMonths(startdate, enddate));
+
+                document.getElementById("numberoftransfer").value = modiff(startdate, enddate) + 1;
+            } else if (url == "Yearly") {
+                //alert("<br />Number of <b>years</b> : "+DateDiff.inYears(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inYears(startdate, enddate)) + 1;
+            } else if (url == "End of Quarter") {
+                //alert("<br />Number of <b>years</b> : "+DateDiff.inYears(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (quarterDiff(startdate, enddate)) + 1;
+            }
+
+
+
+
+        });
+
+
+        function quarterDiff(d1, d2) {
+            firstQuarter = getQuarter(d1);
+            secondQuarter = getQuarter(d2);
+            return (1 + Math.abs(firstQuarter - secondQuarter));
+        }
+
+        function getQuarter(dd) {
+            return (dd.getFullYear() * 4) + ((dd.getMonth() - 1) / 3);
+        }
+
+
+        $("#single_image").fancybox();
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+        today = dd + '/' + mm + '/' + yyyy;
+        document.getElementById('dato').innerHTML = today;
+        $('#currentdate').val(today);
+
+        $('#startdate').Zebra_DatePicker({
+            direction: true,
+            pair: $('#enddate')
+        });
+        $('#enddate').Zebra_DatePicker({
+            direction: 1
+        });
+
+    });
+
+    // Purpose Code Mapping
+    var qatarMainPurposeOptions = [
+        {value: "50", label: "Operational Expenses"},
+        {value: "51", label: "Goods & Services"},
+        {value: "52", label: "Financial Services"},
+        {value: "53", label: "Human Resources"},
+        {value: "54", label: "Insurance Services"},
+        {value: "55", label: "Projects Payments"},
+        {value: "56", label: "Social Responsibility"},
+        {value: "57", label: "Corporate Transactions"},
+        {value: "58", label: "Government Services"},
+        {value: "59", label: "Investments"},
+        {value: "60", label: "Payment Service Provider"}
+    ];
+
+    var nonQatarMainPurposeOptions = [
+        {value: "Import of Goods", label: "Import of Goods"},
+        {value: "Transportation", label: "Transportation"},
+        {value: "Travel", label: "Travel"},
+        {value: "Income", label: "Income"},
+        {value: "G.N.I.E.", label: "G.N.I.E."},
+        {value: "Communication Service", label: "Communication Service"},
+        {value: "Construction Service", label: "Construction Service"},
+        {value: "Insurance Service", label: "Insurance Service"},
+        {value: "Financial Service", label: "Financial Service"},
+        {value: "Government Service", label: "Government Service"},
+        {value: "Comp.& Info. Service", label: "Comp.& Info. Service"},
+        {value: "Per.,Cul.,Rec. Service", label: "Per.,Cul.,Rec. Service"},
+        {value: "Other Business Service", label: "Other Business Service"},
+        {value: "Royalties & Lic. Fees", label: "Royalties & Lic. Fees"},
+        {value: "Transfers", label: "Transfers"},
+        {value: "Capital transfers", label: "Capital transfers"},
+        {value: "Repayments of loans received", label: "Repayments of loans received"},
+        {value: "Drawing on loans extended", label: "Drawing on loans extended"},
+        {value: "remittance to bank account abroad", label: "remittance to bank account abroad"},
+        {value: "Acquisition of portfolio investment abroad", label: "Acquisition of portfolio investment abroad"},
+        {value: "Acquisition of other assets abroad", label: "Acquisition of other assets abroad"},
+        {value: "Repayments other foreign liabilities", label: "Repayments other foreign liabilities"},
+        {value: "other transactions n.i.e", label: "other transactions n.i.e"},
+        {value: "Others", label: "Others"}
+    ];
+
+    var qatarPurposeMapping = {
+        "50": [
+            {code: "5000", name: "Rent Payments"},
+            {code: "5001", name: "Service, Fees and Charges Payments (Maintenance, Repair, Consulting)"},
+            {code: "5002", name: "Utility Bills (Electricity, Water, Gas, Cooling)"}
+        ],
+        "51": [
+            {code: "5050", name: "Buying of Furniture, Equipment, Raw Materials and Supplies (Acquisition of Goods)"},
+            {code: "5051", name: "Payment of Royalty Fees, Brands or Trademarks"},
+            {code: "5052", name: "Import and Export Charges"},
+            {code: "5053", name: "IT Services & Software Purchases"},
+            {code: "5054", name: "Shipping and Freight Payments"},
+            {code: "5055", name: "Legal Settlements"},
+            {code: "5056", name: "Infrastructure Development"},
+            {code: "5057", name: "Online Orders / Purchases"}
+        ],
+        "52": [
+            {code: "5100", name: "Loan & Interest Payments"},
+            {code: "5101", name: "Shareholder Distribution / Dividends"},
+            {code: "5102", name: "Investment Funding"},
+            {code: "5103", name: "Credit Transactions"},
+            {code: "5104", name: "Mergers and Acquisitions"},
+            {code: "5105", name: "Cash Remittance"},
+            {code: "5106", name: "Fees and Commissions"}
+        ],
+        "53": [
+            {code: "5150", name: "Salaries and Wages"},
+            {code: "5151", name: "Bonus Payments"},
+            {code: "5152", name: "Other Allowances (Includes Travel Allowance and Leave Encashment)"},
+            {code: "5153", name: "School / University Fees"},
+            {code: "5154", name: "Payment of Pension"},
+            {code: "5155", name: "Compensation"},
+            {code: "5156", name: "Social Security Contributions"},
+            {code: "5157", name: "End of Services Benefits"}
+        ],
+        "54": [
+            {code: "5200", name: "General Insurance"},
+            {code: "5201", name: "Employees Insurance"},
+            {code: "5202", name: "Asset Insurance"},
+            {code: "5203", name: "Liability Insurance"}
+        ],
+        "55": [
+            {code: "5250", name: "Payments for Capital Projects"},
+            {code: "5251", name: "Construction and Development Payments"},
+            {code: "5252", name: "Maintenance Payment"},
+            {code: "5253", name: "Consulting Services"}
+        ],
+        "56": [
+            {code: "5300", name: "Environmental Initiatives"}
+        ],
+        "57": [
+            {code: "5350", name: "Payment within Company or Group (Inter-Group Transactions to Parent or Other Subsidiaries)"},
+            {code: "5351", name: "Joint Investments"},
+            {code: "5352", name: "Treasury Transactions i.e. Hedging Operation, FD placement & Swap Transactions"},
+            {code: "5353", name: "Currency Exchange"}
+        ],
+        "58": [
+            {code: "5400", name: "Government Services"},
+            {code: "5401", name: "Courts Payments"},
+            {code: "5402", name: "Tax Payments"},
+            {code: "5403", name: "Customs Payments"}
+        ],
+        "59": [
+            {code: "5450", name: "Investment in Real Estate"},
+            {code: "5451", name: "Investment in Shares / Equities / Bonds"},
+            {code: "5452", name: "Other Investments"}
+        ],
+        "60": [
+            {code: "5500", name: "Merchant Settlement"}
+        ]
+    };
+
+    var nonQatarPurposeMapping = {
+        "Import of Goods": [
+            {code: "B1B01", name: "Advance payment for imports"},
+            {code: "B1B02", name: "Import payment / invoice settlement"},
+            {code: "B1B03", name: "Diplomatic missions imports"},
+            {code: "B1B04", name: "Intermediary trade"}
+        ],
+        "Transportation": [
+            {code: "B2A01", name: "Surplus Freight/Passenger Fare — Foreign Shipping Cos."},
+            {code: "B2A02", name: "Operating Expenses — Qatari Shipping Cos. Abroad"},
+            {code: "B2A03", name: "Freight on Imports — Shipping Cos."},
+            {code: "B2A05", name: "Operational Leasing with Crew — Shipping"},
+            {code: "B2A06", name: "Passage Bookings Abroad — Shipping"},
+            {code: "B2A07", name: "Surplus Freight/Passenger Fare — Foreign Airlines"},
+            {code: "B2A08", name: "Operating Expenses — Qatari Airlines"},
+            {code: "B2A09", name: "Freight on Imports — Airlines"},
+            {code: "B2A11", name: "Operational Leasing with Crew — Airlines"},
+            {code: "B2A12", name: "Passage Bookings Abroad — Airlines"},
+            {code: "B2A13", name: "Other Transport Services (Stevedoring/Demurrage/Handling)"}
+        ],
+        "Travel": [
+            {code: "B2B01", name: "Business travel"},
+            {code: "B2B02", name: "General travel"},
+            {code: "B2B03", name: "Pilgrimage travel"},
+            {code: "B2B04", name: "Medical travel"},
+            {code: "B2B05", name: "Education travel"},
+            {code: "B2B06", name: "Other travel (international cards)"},
+            {code: "B2B07", name: "Foreign currency sold / issued to residents for investment purposes"},
+            {code: "B2B08", name: "Foreign currency sold / issued to residents for travel purposes"},
+            {code: "B2B09", name: "Transactions abroad on credit cards issued by the reporting bank"},
+            {code: "B2B10", name: "Transactions abroad on debit cards issued by the reporting bank"}
+        ],
+        "Income": [
+            {code: "B3A02", name: "Deposits"},
+            {code: "B3A03", name: "Profit on non-resident deposits"},
+            {code: "B3A04", name: "Profit on Non-Resident Loans"},
+            {code: "B3A05", name: "Profit on debt securities"},
+            {code: "B3A06", name: "Bank profit payments (Vostro/Nostro)"},
+            {code: "B3A07", name: "Repatriation of profits"},
+            {code: "B4B07", name: "Dividend payments / repatriation"}
+        ],
+        "G.N.I.E.": [
+            {code: "B2G01", name: "Maintenance of Qatari Embassies Abroad"},
+            {code: "B2G02", name: "Remittances by Foreign Embassies in Qatar"}
+        ],
+        "Communication Service": [
+            {code: "B2K01", name: "Postal claims settlement"},
+            {code: "B2K02", name: "Courier claims settlement"},
+            {code: "B2K03", name: "Telecom claims settlement"},
+            {code: "B2K04", name: "Satellite services"}
+        ],
+        "Construction Service": [
+            {code: "B2D01", name: "Construction costs for Qatari projects abroad"},
+            {code: "B2D02", name: "Construction costs for foreign companies in Qatar"}
+        ],
+        "Insurance Service": [
+            {code: "B2C01", name: "Life insurance premium"},
+            {code: "B2C02", name: "Freight insurance"},
+            {code: "B2C03", name: "General insurance premium"},
+            {code: "B2C04", name: "Reinsurance premium"},
+            {code: "B2C05", name: "Insurance auxiliary services (commission)"},
+            {code: "B2C06", name: "Insurance claim settlement"}
+        ],
+        "Financial Service": [
+            {code: "B2F01", name: "Financial intermediation (excl. investment banking)"},
+            {code: "B2F02", name: "Investment banking services"},
+            {code: "B2F03", name: "Auxiliary financial services (regulatory, custodial, depository fees)"}
+        ],
+        "Government Service": [
+            {code: "B2G07", name: "Government services (outgoing remittances)"}
+        ],
+        "Comp.& Info. Service": [
+            {code: "B2E01", name: "Hardware consultancy"},
+            {code: "B2E02", name: "Software implementation"},
+            {code: "B2E03", name: "Database / data processing charges"},
+            {code: "B2E04", name: "Computer/software repair & maintenance"},
+            {code: "B2E05", name: "News agency services"},
+            {code: "B2E06", name: "Other information services (subscriptions)"}
+        ],
+        "Per.,Cul.,Rec. Service": [
+            {code: "B2H01", name: "Audiovisual services (production, rentals, talent fees)"},
+            {code: "B2H02", name: "Personal cultural services (museums, libraries, archives, sports)"}
+        ],
+        "Other Business Service": [
+            {code: "B2J01", name: "Merchanting (net payments)"},
+            {code: "B2J02", name: "Trade-related commissions (exports/imports)"},
+            {code: "B2J03", name: "Operational leasing (no crew), including charter hire"},
+            {code: "B2J04", name: "Legal services"},
+            {code: "B2J05", name: "Accounting, auditing, bookkeeping, and tax services"},
+            {code: "B2J06", name: "Business and management consultancy and PR services"},
+            {code: "B2J07", name: "Advertising, market research, and opinion polling services"},
+            {code: "B2J08", name: "Research and development services"},
+            {code: "B2J09", name: "Architectural, engineering, and technical services"},
+            {code: "B2J10", name: "Agricultural, mining, and on-site processing services"},
+            {code: "B2J11", name: "Office maintenance abroad"},
+            {code: "B2J12", name: "Distribution services"},
+            {code: "B2J13", name: "Environmental services"},
+            {code: "B2J19", name: "Other services not classified"}
+        ],
+        "Royalties & Lic. Fees": [
+            {code: "B2R01", name: "Franchise and IP usage fees (patents, copyrights, trademarks, industrial processes)"},
+            {code: "B2R02", name: "Licensing fees for original works or prototypes (manuscripts, films, etc.)"}
+        ],
+        "Transfers": [
+            {code: "B4A01", name: "Family Maintenance & Savings"},
+            {code: "B4B05", name: "Government Contributions to International Institutions"},
+            {code: "B4B06", name: "Tax Payments / Refunds"}
+        ],
+        "Capital transfers": [
+            {code: "B5A17", name: "Purchase of Intangible Assets (Patents/Trademarks/Copyrights)"}
+        ],
+        "Repayments of loans received": [
+            {code: "B6C12", name: "Repayment of Long/Medium-Term Loans"},
+            {code: "B6C13", name: "Repayment of Short-Term Loans"}
+        ],
+        "Drawing on loans extended": [
+            {code: "B6C11", name: "Loans Extended to Non-Residents"}
+        ],
+        "remittance to bank account abroad": [
+            {code: "B6C15", name: "Remittances to Bank's Own Account Abroad"}
+        ],
+        "Acquisition of portfolio investment abroad": [
+            {code: "B6B01", name: "Qatari Investment Abroad — Equity"},
+            {code: "B6B02", name: "Qatari Investment Abroad — Debt Securities"}
+        ],
+        "Acquisition of other assets abroad": [
+            {code: "B6A03", name: "Investment in Branches/Wholly-Owned Subsidiaries"},
+            {code: "B6A04", name: "Investment in Subsidiaries/Associates"},
+            {code: "B6A05", name: "Investment in Real Estate Abroad"}
+        ],
+        "Repayments other foreign liabilities": [
+            {code: "B6A06", name: "Repatriation of FDI in Qatar — Equity"},
+            {code: "B6A07", name: "Repatriation of FDI in Qatar — Debt Securities"},
+            {code: "B6A08", name: "Repatriation of FDI in Qatar — Real Estate"},
+            {code: "B6B09", name: "Repatriation of Foreign Portfolio Investment — Equity"},
+            {code: "B6B10", name: "Repatriation of Foreign Portfolio Investment — Debt Securities"},
+            {code: "B6C14", name: "Repatriation of Non-Resident Deposits"}
+        ],
+        "other transactions n.i.e": [
+            {code: "B6C18", name: "Other Capital Payments Not Classified"}
+        ],
+        "Others": [
+            {code: "B7A01", name: "Export Refunds / Invoice Reductions"},
+            {code: "B7B02", name: "Reversal of Wrong Entries"},
+            {code: "B7C03", name: "Resident-to-Resident Payments"}
+        ]
+    };
+
+    function isQatarPurposeCountry() {
+        return $('select[name="country"]').val() === "Qatar";
+    }
+
+    function getMainPurposeOptions() {
+        return isQatarPurposeCountry() ? qatarMainPurposeOptions : nonQatarMainPurposeOptions;
+    }
+
+    function getPurposeMapping() {
+        return isQatarPurposeCountry() ? qatarPurposeMapping : nonQatarPurposeMapping;
+    }
+
+    function populateMainPurposeOptions() {
+        var mainPurposeSelect = document.getElementById("main_purpose");
+        var currentValue = mainPurposeSelect.value;
+        var options = getMainPurposeOptions();
+
+        mainPurposeSelect.innerHTML = '<option value="">Select Purpose</option>';
+
+        for (var i = 0; i < options.length; i++) {
+            var option = document.createElement("option");
+            option.value = options[i].value;
+            option.text = options[i].label;
+            mainPurposeSelect.appendChild(option);
+        }
+
+        if (currentValue && options.some(function(item) { return item.value === currentValue; })) {
+            mainPurposeSelect.value = currentValue;
+        } else {
+            mainPurposeSelect.value = '';
+        }
+
+        updateSubPurpose();
+    }
+
+    function updateSubPurpose() {
+        var mainPurpose = document.getElementById("main_purpose").value;
+        var subPurposeSelect = document.getElementById("sub_purpose");
+        var currentValue = subPurposeSelect.value;
+        var purposeMapping = getPurposeMapping();
+
+        subPurposeSelect.innerHTML = '<option value="">Select Payment Details</option>';
+
+        if (mainPurpose && purposeMapping[mainPurpose]) {
+            var subPurposes = purposeMapping[mainPurpose];
+            for (var i = 0; i < subPurposes.length; i++) {
+                var option = document.createElement("option");
+                option.value = subPurposes[i].code;
+                option.text = subPurposes[i].name;
+                subPurposeSelect.appendChild(option);
+            }
+
+            if (currentValue && subPurposes.some(function(item) { return item.code === currentValue; })) {
+                subPurposeSelect.value = currentValue;
+            }
+        }
+    }
+
+    // AFAQ BIC Code Data Structure
+    var afaqBicData = {
+        "United Arab Emirates": [
+            {bic: "CBAUAEAA", bank: "CENTRAL BANK OF THE UAE"},
+            {bic: "BARCAEAD", bank: "BARCLAYS BANK"}
+        ],
+        "Saudi Arabia": [
+            {bic: "SAMASARI", bank: "SAUDI CENTRAL BANK"},
+            {bic: "RJHISARI", bank: "AL RAJHI BANK"},
+            {bic: "BJAZSAJE", bank: "BANK AL JAZIRA"},
+            {bic: "ARNBSARI", bank: "ARAB NATIONAL BANK"},
+            {bic: "BSFRSARI", bank: "BANQUE SAUDI FRANSI"},
+            {bic: "NCBKSAJE", bank: "THE SAUDI NATIONAL BANK"},
+            {bic: "INMASARI", bank: "ALINMA BANK"},
+            {bic: "SIBCSARI", bank: "THE SAUDI INVESTMENT BANK"},
+            {bic: "SABBSARI", bank: "SAUDI AWWAL BANK"},
+            {bic: "GULFSARI", bank: "GULF INTERNATIONAL BANK"},
+            {bic: "RIBLSARI", bank: "RIYAD BANK"},
+            {bic: "ALBISARI", bank: "BANK ALBILAD"},
+            {bic: "NBOKSAJE", bank: "NATIONAL BANK OF KUWAIT"},
+            {bic: "NBOBSARI", bank: "NATIONAL BANK OF BAHRAIN"},
+            {bic: "STCJSARI", bank: "STC Bank"}
+        ],
+        "Oman": [
+            {bic: "CBOMOMRU", bank: "Central Bank of Oman"},
+            {bic: "BMUSOMRX", bank: "Bank Muscat"},
+            {bic: "BDOFOMRU", bank: "Bank Dhofar"},
+            {bic: "OMABOMRU", bank: "Oman Arab Bank"},
+            {bic: "BSHROMRU", bank: "Sohar International"},
+            {bic: "NBOMOMRX", bank: "National Bank of Oman"},
+            {bic: "AUBOOMRU", bank: "Ahli Bank"}
+        ],
+        "Kuwait": [
+            {bic: "CBKUKWKW", bank: "CENTRAL BANK OF KUWAIT"},
+            {bic: "BBYNKWKW", bank: "BOUBYAN BANK"},
+            {bic: "BRGNKWKW", bank: "BURGAN BANK"},
+            {bic: "KFHOKWKW", bank: "KUWAIT FINANCE HOUSE"},
+            {bic: "NBOKKWKW", bank: "NATIONAL BANK OF KUWAIT"},
+            {bic: "IBKUKWKW", bank: "THE INDUSTRIAL BANK OF KUWAIT K.S.C."},
+            {bic: "COMBKWKW", bank: "COMMERCIAL BANK OF KUWAIT"},
+            {bic: "ABKKKWKW", bank: "AL AHLI BANK OF KUWAIT"},
+            {bic: "KWIBKWKW", bank: "KUWAIT INTERNATIONAL BANK"},
+            {bic: "WRBAKWKW", bank: "WARBA BANK"},
+            {bic: "GULBKWKW", bank: "GULF BANK"},
+            {bic: "MSHQKWKW", bank: "MASHREQ BANK KUWAIT"},
+            {bic: "NBADKWKW", bank: "FIRST ABU DHABI BANK KUWAIT"},
+            {bic: "HBMEKWKW", bank: "HSBC BANK KUWAIT"},
+            {bic: "ICBKKWKW", bank: "ICBC BANK KUWAIT"},
+            {bic: "DOHBKWKW", bank: "DOHA BANK KUWAIT"},
+            {bic: "CITIKWKW", bank: "CITI BANK"},
+            {bic: "BBKUKWKW", bank: "BANK OF BAHRAIN AND KUWAIT"},
+            {bic: "QNBAKWKW", bank: "QATAR NATIONAL BANK"},
+            {bic: "RJHIKWKW", bank: "AL RAJHI BANK"}
+        ],
+        "Bahrain": [
+            {bic: "BMAGBHBM", bank: "CENTRAL BANK OF BAHRAIN"},
+            {bic: "BIBBBHBM", bank: "BAHRAIN ISLAMIC BANK"},
+            {bic: "ESKBBHBM", bank: "ESKAN BANK"},
+            {bic: "NBOBBHBM", bank: "NATIONAL BANK OF BAHRAIN"},
+            {bic: "BBKUBHBM", bank: "BANK OF BAHRAIN AND KUWAIT"},
+            {bic: "AUBBBHBM", bank: "Kuwait Finance House B.S.C."},
+            {bic: "HBHOBHBM", bank: "HOUSING BANK FOR TRADE AND FINANCE"},
+            {bic: "ICICBHBM", bank: "ICICI BANK LTD"},
+            {bic: "SBINBHBM", bank: "STATE BANK OF INDIA"},
+            {bic: "ARABBHBM", bank: "ARAB BANKING LIMITED"},
+            {bic: "ALSABHBM", bank: "AL SALAM BANK"},
+            {bic: "FIBHBHBM", bank: "ITHMAAR BANK"},
+            {bic: "ABCOBHBM", bank: "ARAB BANKING CORPORATION (B.S.C.)"},
+            {bic: "ABIBBHBM", bank: "AL BARAKA ISLAMIC BANK"},
+            {bic: "KHCBBHBM", bank: "KHALEEJI COMMERCIAL BANK B.S.C. (C)"},
+            {bic: "NBOKBHBM", bank: "NATIONAL BANK OF KUWAIT S.A.K"},
+            {bic: "BOMLBHBM", bank: "MASHREQ BANK PSC"},
+            {bic: "BDBBBHBM", bank: "BAHRAIN DEVELOPMENT BANK"},
+            {bic: "HABBBHBM", bank: "HABIB BANK LIMITED"},
+            {bic: "NBADBHBM", bank: "FIRST ABU DHABI BANK"},
+            {bic: "GULFBHBMRET", bank: "GULF INTERNATIONAL BANK"},
+            {bic: "BBMEBHBX", bank: "HSBC BANK MIDDLE EAST"},
+            {bic: "UNILBHBM", bank: "UNITED BANK LIMITED"},
+            {bic: "SCBLBHBM", bank: "STANDARD CHARTERED BANK"},
+            {bic: "CITIBHBX", bank: "CITI BANK N.A."},
+            {bic: "BNPABHBC", bank: "BNP PARIBAS"}
+        ]
+    };
+
+    $(document).ready(function() {
+        function updateTransferChannel() {
+            var selectedCountry = $('select[name="country"]').val();
+            var afaqCountries = ["United Arab Emirates", "Saudi Arabia", "Oman", "Kuwait", "Bahrain"];
+
+            if (afaqCountries.indexOf(selectedCountry) !== -1) {
+                $('#transfer_channel_row').css('display', 'flex');
+                $('#tc_swift').val('SWIFT');
+            } else if (selectedCountry === "Qatar") {
+                $('#transfer_channel_row').hide();
+                $('#tc_swift').val('Tahweel').prop('checked', true);
+            } else {
+                $('#transfer_channel_row').hide();
+                $('#tc_swift').val('SWIFT').prop('checked', true);
+            }
+        }
+
+        $('select[name="country"], #type-select').change(function() {
+            updateTransferChannel();
+        });
+
+        updateTransferChannel();
+
+        // BIC Code and Bank Name Dynamic Behavior
+        function updateBICField() {
+            var selectedCountry = $('select[name="country"]').val();
+            var transferChannel = $('input[name="transfer_channel"]:checked').val();
+            var afaqCountries = ["United Arab Emirates", "Saudi Arabia", "Oman", "Kuwait", "Bahrain"];
+
+            if (transferChannel === "AFAQ" && afaqCountries.indexOf(selectedCountry) !== -1) {
+                // Show BIC dropdown for AFAQ + GCC countries
+                var bicSelect = '<select name="bbn" id="bbn_select" style="width:400px; text-transform:uppercase"></select>';
+                $('#bbn_input').replaceWith(bicSelect);
+
+                // Populate BIC dropdown
+                var bicOptions = '<option value="">Select BIC Code</option>';
+                if (afaqBicData[selectedCountry]) {
+                    afaqBicData[selectedCountry].forEach(function(item) {
+                        bicOptions += '<option value="' + item.bic + '">' + item.bic + '</option>';
+                    });
+                }
+                $('#bbn_select').html(bicOptions);
+
+                // Listen for BIC selection
+                $('#bbn_select').off('change').on('change', function() {
+                    var selectedBIC = $(this).val();
+                    if (selectedBIC && afaqBicData[selectedCountry]) {
+                        var banks = afaqBicData[selectedCountry].filter(function(item) {
+                            return item.bic === selectedBIC;
+                        });
+
+                        if (banks.length === 1) {
+                            // Auto-fill single bank
+                            $('#bbname_input').val(banks[0].bank);
+                        } else if (banks.length > 1) {
+                            // Multiple banks - show dropdown (though current data has 1:1 mapping)
+                            $('#bbname_input').val(banks[0].bank);
+                        }
+                    }
+                });
+            } else {
+                // Show text input for SWIFT or non-GCC
+                var bicInput = '<input type="text" name="bbn" id="bbn_input" style="width:400px; text-transform:uppercase" />';
+                if ($('#bbn_select').length) {
+                    $('#bbn_select').replaceWith(bicInput);
+                }
+            }
+        }
+
+        // Update BIC field when transfer channel or country changes
+        $('input[name="transfer_channel"], select[name="country"]').change(function() {
+            updateBICField();
+        });
+
+        // Purpose Code Dynamic Behavior
+        function updatePurposeCodeVisibility() {
+            $('#purpose_code_container').show();
+            populateMainPurposeOptions();
+        }
+
+        $('select[name="country"]').change(function() {
+            updatePurposeCodeVisibility();
+        });
+
+        // Initialize on page load
+        updatePurposeCodeVisibility();
+    });
+
+</script><title>Fund Transfer – Corporate</title>
+</head>
+
+<body>
+<div id="wrapper">
+  <div id="insidewraper">
+    <form name="application" action="tcpdf/examples/barwa2.php" method="post" onsubmit="return  printnow()">
+      <div id="header">
+        <div style="position:absolute; left:20px; top:30px;"><img src="./images/logo.png" alt="Dukhan Bank" style="height:60px;"></div>
+        <div style="position:absolute; right:0;  top:30px;"><a href="index2ar.html">العربية</a></div>
+
+			</br>
+			</br>
+	</br>
+	
+	
+        <div id="dato" style="position:absolute; right:0;  top:170px;font-family:'Tahoma'; font-size:14px; color:#223570;"></div>
+      </div>
+          <div id="pagetitle"><h2 style="padding-left:40px;">Fund Transfer – Corporate - Electronic Payment</h2></div>
+      <div id="title">
+        
+       <h1 style="padding-left:40px;">Please Issue</h1>
+      </div>
+      <div id="first" style="height:20px;">
+        <input type="hidden" name="currentdate" id="currentdate" />
+      </div>
+      <div id="second" style="height:1032px;">
+        <div id="issue" style="height:25px;" >
+          <div>
+            <label class="bold" style="width:250px; display:block; float:left">&nbsp;</label>
+            <select id="dynamic-select" name="issue" style="width:300px;">
+              <option value="index.html" >Internal Transfer Within Dukhan Bank</option>
+              <option value="index2.html" selected="selected">Electronic Payment</option>
+              <option value="index3.html">Manager Cheque</option>
+            </select>
+          </div>
+        </div>
+        <div id="issue" style="height:25px;" >
+          <div>
+            <label class="bold" style="width:250px; display:block; float:left">&nbsp;</label>
+            <select id="type-select" name="issue2" style="width:300px;">
+              <option value="One Off Payment" selected="selected">One Off Payment</option>
+              <option value="Standing Order">Standing Order</option>
+            </select>
+          </div>
+        </div>
+        <div id="payment" style="margin-top:0px;">
+          <div id="title2">
+            <h1>Payment and Beneficiary Details</h1>
+          </div>
+          <div> <span>
+            <label class="special" >Beneficiary's Account Currency</label>
+            <select name="currency">
+              <option value="AFN">AFN - Afghan Afghani</option>
+    <option value="ALL">ALL - Albanian Lek</option>
+    <option value="DZD">DZD - Algerian Dinar</option>
+    <option value="AOA">AOA - Angolan Kwanza</option>
+    <option value="ARS">ARS - Argentine Peso</option>
+    <option value="AMD">AMD - Armenian Dram</option>
+    <option value="AWG">AWG - Aruban Florin</option>
+    <option value="AUD">AUD - Australian Dollar</option>
+    <option value="AZN">AZN - Azerbaijani Manat</option>
+    <option value="BSD">BSD - Bahamian Dollar</option>
+    <option value="BHD">BHD - Bahraini Dinar</option>
+    <option value="BDT">BDT - Bangladeshi Taka</option>
+    <option value="BBD">BBD - Barbadian Dollar</option>
+    <option value="BYR">BYR - Belarusian Ruble</option>
+    <option value="BEF">BEF - Belgian Franc</option>
+    <option value="BZD">BZD - Belize Dollar</option>
+    <option value="BMD">BMD - Bermudan Dollar</option>
+    <option value="BTN">BTN - Bhutanese Ngultrum</option>
+    <option value="BTC">BTC - Bitcoin</option>
+    <option value="BOB">BOB - Bolivian Boliviano</option>
+    <option value="BAM">BAM - Bosnia-Herzegovina Convertible Mark</option>
+    <option value="BWP">BWP - Botswanan Pula</option>
+    <option value="BRL">BRL - Brazilian Real</option>
+    <option value="GBP">GBP - British Pound Sterling</option>
+    <option value="BND">BND - Brunei Dollar</option>
+    <option value="BGN">BGN - Bulgarian Lev</option>
+    <option value="BIF">BIF - Burundian Franc</option>
+    <option value="KHR">KHR - Cambodian Riel</option>
+    <option value="CAD">CAD - Canadian Dollar</option>
+    <option value="CVE">CVE - Cape Verdean Escudo</option>
+    <option value="KYD">KYD - Cayman Islands Dollar</option>
+    <option value="XOF">XOF - CFA Franc BCEAO</option>
+    <option value="XAF">XAF - CFA Franc BEAC</option>
+    <option value="XPF">XPF - CFP Franc</option>
+    <option value="CLP">CLP - Chilean Peso</option>
+    <option value="CNY">CNY - Chinese Yuan</option>
+    <option value="COP">COP - Colombian Peso</option>
+    <option value="KMF">KMF - Comorian Franc</option>
+    <option value="CDF">CDF - Congolese Franc</option>
+    <option value="CRC">CRC - Costa Rican ColÃ³n</option>
+    <option value="HRK">HRK - Croatian Kuna</option>
+    <option value="CUC">CUC - Cuban Convertible Peso</option>
+    <option value="CZK">CZK - Czech Republic Koruna</option>
+    <option value="DKK">DKK - Danish Krone</option>
+    <option value="DJF">DJF - Djiboutian Franc</option>
+    <option value="DOP">DOP - Dominican Peso</option>
+    <option value="XCD">XCD - East Caribbean Dollar</option>
+    <option value="EGP">EGP - Egyptian Pound</option>
+    <option value="ERN">ERN - Eritrean Nakfa</option>
+    <option value="EEK">EEK - Estonian Kroon</option>
+    <option value="ETB">ETB - Ethiopian Birr</option>
+    <option value="EUR">EUR - Euro</option>
+    <option value="FKP">FKP - Falkland Islands Pound</option>
+    <option value="FJD">FJD - Fijian Dollar</option>
+    <option value="GMD">GMD - Gambian Dalasi</option>
+    <option value="GEL">GEL - Georgian Lari</option>
+    <option value="DEM">DEM - German Mark</option>
+    <option value="GHS">GHS - Ghanaian Cedi</option>
+    <option value="GIP">GIP - Gibraltar Pound</option>
+    <option value="GRD">GRD - Greek Drachma</option>
+    <option value="GTQ">GTQ - Guatemalan Quetzal</option>
+    <option value="GNF">GNF - Guinean Franc</option>
+    <option value="GYD">GYD - Guyanaese Dollar</option>
+    <option value="HTG">HTG - Haitian Gourde</option>
+    <option value="HNL">HNL - Honduran Lempira</option>
+    <option value="HKD">HKD - Hong Kong Dollar</option>
+    <option value="HUF">HUF - Hungarian Forint</option>
+    <option value="ISK">ISK - Icelandic KrÃ³na</option>
+    <option value="INR">INR - Indian Rupee</option>
+    <option value="IDR">IDR - Indonesian Rupiah</option>
+    <option value="IRR">IRR - Iranian Rial</option>
+    <option value="IQD">IQD - Iraqi Dinar</option>
+    <option value="ILS">ILS - Israeli New Sheqel</option>
+    <option value="ITL">ITL - Italian Lira</option>
+    <option value="JMD">JMD - Jamaican Dollar</option>
+    <option value="JPY">JPY - Japanese Yen</option>
+    <option value="JOD">JOD - Jordanian Dinar</option>
+    <option value="KZT">KZT - Kazakhstani Tenge</option>
+    <option value="KES">KES - Kenyan Shilling</option>
+    <option value="KWD">KWD - Kuwaiti Dinar</option>
+    <option value="KGS">KGS - Kyrgystani Som</option>
+    <option value="LAK">LAK - Laotian Kip</option>
+    <option value="LVL">LVL - Latvian Lats</option>
+    <option value="LBP">LBP - Lebanese Pound</option>
+    <option value="LSL">LSL - Lesotho Loti</option>
+    <option value="LRD">LRD - Liberian Dollar</option>
+    <option value="LYD">LYD - Libyan Dinar</option>
+    <option value="LTL">LTL - Lithuanian Litas</option>
+    <option value="MOP">MOP - Macanese Pataca</option>
+    <option value="MKD">MKD - Macedonian Denar</option>
+    <option value="MGA">MGA - Malagasy Ariary</option>
+    <option value="MWK">MWK - Malawian Kwacha</option>
+    <option value="MYR">MYR - Malaysian Ringgit</option>
+    <option value="MVR">MVR - Maldivian Rufiyaa</option>
+    <option value="MRO">MRO - Mauritanian Ouguiya</option>
+    <option value="MUR">MUR - Mauritian Rupee</option>
+    <option value="MXN">MXN - Mexican Peso</option>
+    <option value="MDL">MDL - Moldovan Leu</option>
+    <option value="MNT">MNT - Mongolian Tugrik</option>
+    <option value="MAD">MAD - Moroccan Dirham</option>
+    <option value="MZM">MZM - Mozambican Metical</option>
+    <option value="MMK">MMK - Myanmar Kyat</option>
+    <option value="NAD">NAD - Namibian Dollar</option>
+    <option value="NPR">NPR - Nepalese Rupee</option>
+    <option value="ANG">ANG - Netherlands Antillean Guilder</option>
+    <option value="TWD">TWD - New Taiwan Dollar</option>
+    <option value="NZD">NZD - New Zealand Dollar</option>
+    <option value="NIO">NIO - Nicaraguan CÃ³rdoba</option>
+    <option value="NGN">NGN - Nigerian Naira</option>
+    <option value="KPW">KPW - North Korean Won</option>
+    <option value="NOK">NOK - Norwegian Krone</option>
+    <option value="OMR">OMR - Omani Rial</option>
+    <option value="PKR">PKR - Pakistani Rupee</option>
+    <option value="PAB">PAB - Panamanian Balboa</option>
+    <option value="PGK">PGK - Papua New Guinean Kina</option>
+    <option value="PYG">PYG - Paraguayan Guarani</option>
+    <option value="PEN">PEN - Peruvian Nuevo Sol</option>
+    <option value="PHP">PHP - Philippine Peso</option>
+    <option value="PLN">PLN - Polish Zloty</option>
+    <option value="QAR" selected="selected">QAR - Qatari Rial</option>
+    <option value="RON">RON - Romanian Leu</option>
+    <option value="RUB">RUB - Russian Ruble</option>
+    <option value="RWF">RWF - Rwandan Franc</option>
+    <option value="SVC">SVC - Salvadoran ColÃ³n</option>
+    <option value="WST">WST - Samoan Tala</option>
+    <option value="SAR">SAR - Saudi Riyal</option>
+    <option value="RSD">RSD - Serbian Dinar</option>
+    <option value="SCR">SCR - Seychellois Rupee</option>
+    <option value="SLL">SLL - Sierra Leonean Leone</option>
+    <option value="SGD">SGD - Singapore Dollar</option>
+    <option value="SKK">SKK - Slovak Koruna</option>
+    <option value="SBD">SBD - Solomon Islands Dollar</option>
+    <option value="SOS">SOS - Somali Shilling</option>
+    <option value="ZAR">ZAR - South African Rand</option>
+    <option value="KRW">KRW - South Korean Won</option>
+    <option value="XDR">XDR - Special Drawing Rights</option>
+    <option value="LKR">LKR - Sri Lankan Rupee</option>
+    <option value="SHP">SHP - St. Helena Pound</option>
+    <option value="SDG">SDG - Sudanese Pound</option>
+    <option value="SRD">SRD - Surinamese Dollar</option>
+    <option value="SZL">SZL - Swazi Lilangeni</option>
+    <option value="SEK">SEK - Swedish Krona</option>
+    <option value="CHF">CHF - Swiss Franc</option>
+    <option value="SYP">SYP - Syrian Pound</option>
+    <option value="STD">STD - São Tomé and Príncipe Dobra</option>
+    <option value="TJS">TJS - Tajikistani Somoni</option>
+    <option value="TZS">TZS - Tanzanian Shilling</option>
+    <option value="THB">THB - Thai Baht</option>
+    <option value="TOP">TOP - Tongan pa'anga</option>
+    <option value="TTD">TTD - Trinidad & Tobago Dollar</option>
+    <option value="TND">TND - Tunisian Dinar</option>
+    <option value="TRY">TRY - Turkish Lira</option>
+    <option value="TMT">TMT - Turkmenistani Manat</option>
+    <option value="UGX">UGX - Ugandan Shilling</option>
+    <option value="UAH">UAH - Ukrainian Hryvnia</option>
+    <option value="AED">AED - United Arab Emirates Dirham</option>
+    <option value="UYU">UYU - Uruguayan Peso</option>
+    <option value="USD">USD - US Dollar</option>
+    <option value="UZS">UZS - Uzbekistan Som</option>
+    <option value="VUV">VUV - Vanuatu Vatu</option>
+    <option value="VEF">VEF - Venezuelan BolÃ­var</option>
+    <option value="VND">VND - Vietnamese Dong</option>
+    <option value="YER">YER - Yemeni Rial</option>
+    <option value="ZMK">ZMK - Zambian Kwacha</option>
+            </select>
+            </span> <span>
+            <label class="special">Beneficiary's Country</label>
+            <select name="country">
+              <option selected="selected" title="Qatar" value="Qatar">Qatar</option>
+              <option title="Afghanistan" value="Afghanistan">Afghanistan</option>
+              <option title="Åland Islands" value="Åland Islands">Åland Islands</option>
+              <option title="Albania" value="Albania">Albania</option>
+              <option title="Algeria" value="Algeria">Algeria</option>
+              <option title="American Samoa" value="American Samoa">American Samoa</option>
+              <option title="Andorra" value="Andorra">Andorra</option>
+              <option title="Angola" value="Angola">Angola</option>
+              <option title="Anguilla" value="Anguilla">Anguilla</option>
+              <option title="Antarctica" value="Antarctica">Antarctica</option>
+              <option title="Antigua and Barbuda" value="Antigua and Barbuda">Antigua and Barbuda</option>
+              <option title="Argentina" value="Argentina">Argentina</option>
+              <option title="Armenia" value="Armenia">Armenia</option>
+              <option title="Aruba" value="Aruba">Aruba</option>
+              <option title="Australia" value="Australia">Australia</option>
+              <option title="Austria" value="Austria">Austria</option>
+              <option title="Azerbaijan" value="Azerbaijan">Azerbaijan</option>
+              <option title="Bahamas" value="Bahamas">Bahamas</option>
+              <option title="Bahrain" value="Bahrain">Bahrain</option>
+              <option title="Bangladesh" value="Bangladesh">Bangladesh</option>
+              <option title="Barbados" value="Barbados">Barbados</option>
+              <option title="Belarus" value="Belarus">Belarus</option>
+              <option title="Belgium" value="Belgium">Belgium</option>
+              <option title="Belize" value="Belize">Belize</option>
+              <option title="Benin" value="Benin">Benin</option>
+              <option title="Bermuda" value="Bermuda">Bermuda</option>
+              <option title="Bhutan" value="Bhutan">Bhutan</option>
+              <option title="Bolivia, Plurinational State of" value="Bolivia, Plurinational State of">Bolivia, Plurinational State of</option>
+              <option title="Bonaire, Sint Eustatius and Saba" value="Bonaire, Sint Eustatius and Saba">Bonaire, Sint Eustatius and Saba</option>
+              <option title="Bosnia and Herzegovina" value="Bosnia and Herzegovina">Bosnia and Herzegovina</option>
+              <option title="Botswana" value="Botswana">Botswana</option>
+              <option title="Bouvet Island" value="Bouvet Island">Bouvet Island</option>
+              <option title="Brazil" value="Brazil">Brazil</option>
+              <option title="British Indian Ocean Territory" value="British Indian Ocean Territory">British Indian Ocean Territory</option>
+              <option title="Brunei Darussalam" value="Brunei Darussalam">Brunei Darussalam</option>
+              <option title="Bulgaria" value="Bulgaria">Bulgaria</option>
+              <option title="Burkina Faso" value="Burkina Faso">Burkina Faso</option>
+              <option title="Burundi" value="Burundi">Burundi</option>
+              <option title="Cambodia" value="Cambodia">Cambodia</option>
+              <option title="Cameroon" value="Cameroon">Cameroon</option>
+              <option title="Canada" value="Canada">Canada</option>
+              <option title="Cape Verde" value="Cape Verde">Cape Verde</option>
+              <option title="Cayman Islands" value="Cayman Islands">Cayman Islands</option>
+              <option title="Central African Republic" value="Central African Republic">Central African Republic</option>
+              <option title="Chad" value="Chad">Chad</option>
+              <option title="Chile" value="Chile">Chile</option>
+              <option title="China" value="China">China</option>
+              <option title="Christmas Island" value="Christmas Island">Christmas Island</option>
+              <option title="Cocos (Keeling) Islands" value="Cocos (Keeling) Islands">Cocos (Keeling) Islands</option>
+              <option title="Colombia" value="Colombia">Colombia</option>
+              <option title="Comoros" value="Comoros">Comoros</option>
+              <option title="Congo" value="Congo">Congo</option>
+              <option title="Congo, the Democratic Republic of the" value="Congo, the Democratic Republic of the">Congo, the Democratic Republic of the</option>
+              <option title="Cook Islands" value="Cook Islands">Cook Islands</option>
+              <option title="Costa Rica" value="Costa Rica">Costa Rica</option>
+              <option title="Côte d'Ivoire" value="Côte d'Ivoire">Côte d'Ivoire</option>
+              <option title="Croatia" value="Croatia">Croatia</option>
+              <option title="Cuba" value="Cuba">Cuba</option>
+              <option title="Curaçao" value="Curaçao">Curaçao</option>
+              <option title="Cyprus" value="Cyprus">Cyprus</option>
+              <option title="Czech Republic" value="Czech Republic">Czech Republic</option>
+              <option title="Denmark" value="Denmark">Denmark</option>
+              <option title="Djibouti" value="Djibouti">Djibouti</option>
+              <option title="Dominica" value="Dominica">Dominica</option>
+              <option title="Dominican Republic" value="Dominican Republic">Dominican Republic</option>
+              <option title="Ecuador" value="Ecuador">Ecuador</option>
+              <option title="Egypt" value="Egypt">Egypt</option>
+              <option title="El Salvador" value="El Salvador">El Salvador</option>
+              <option title="Equatorial Guinea" value="Equatorial Guinea">Equatorial Guinea</option>
+              <option title="Eritrea" value="Eritrea">Eritrea</option>
+              <option title="Estonia" value="Estonia">Estonia</option>
+              <option title="Ethiopia" value="Ethiopia">Ethiopia</option>
+              <option title="Falkland Islands (Malvinas)" value="Falkland Islands (Malvinas)">Falkland Islands (Malvinas)</option>
+              <option title="Faroe Islands" value="Faroe Islands">Faroe Islands</option>
+              <option title="Fiji" value="Fiji">Fiji</option>
+              <option title="Finland" value="Finland">Finland</option>
+              <option title="France" value="France">France</option>
+              <option title="French Guiana" value="French Guiana">French Guiana</option>
+              <option title="French Polynesia" value="French Polynesia">French Polynesia</option>
+              <option title="French Southern Territories" value="French Southern Territories">French Southern Territories</option>
+              <option title="Gabon" value="Gabon">Gabon</option>
+              <option title="Gambia" value="Gambia">Gambia</option>
+              <option title="Georgia" value="Georgia">Georgia</option>
+              <option title="Germany" value="Germany">Germany</option>
+              <option title="Ghana" value="Ghana">Ghana</option>
+              <option title="Gibraltar" value="Gibraltar">Gibraltar</option>
+              <option title="Greece" value="Greece">Greece</option>
+              <option title="Greenland" value="Greenland">Greenland</option>
+              <option title="Grenada" value="Grenada">Grenada</option>
+              <option title="Guadeloupe" value="Guadeloupe">Guadeloupe</option>
+              <option title="Guam" value="Guam">Guam</option>
+              <option title="Guatemala" value="Guatemala">Guatemala</option>
+              <option title="Guernsey" value="Guernsey">Guernsey</option>
+              <option title="Guinea" value="Guinea">Guinea</option>
+              <option title="Guinea-Bissau" value="Guinea-Bissau">Guinea-Bissau</option>
+              <option title="Guyana" value="Guyana">Guyana</option>
+              <option title="Haiti" value="Haiti">Haiti</option>
+              <option title="Heard Island and McDonald Islands" value="Heard Island and McDonald Islands">Heard Island and McDonald Islands</option>
+              <option title="Holy See (Vatican City State)" value="Holy See (Vatican City State)">Holy See (Vatican City State)</option>
+              <option title="Honduras" value="Honduras">Honduras</option>
+              <option title="Hong Kong" value="Hong Kong">Hong Kong</option>
+              <option title="Hungary" value="Hungary">Hungary</option>
+              <option title="Iceland" value="Iceland">Iceland</option>
+              <option title="India" value="India">India</option>
+              <option title="Indonesia" value="Indonesia">Indonesia</option>
+              <option title="Iran, Islamic Republic of" value="Iran, Islamic Republic of">Iran, Islamic Republic of</option>
+              <option title="Iraq" value="Iraq">Iraq</option>
+              <option title="Ireland" value="Ireland">Ireland</option>
+              <option title="Isle of Man" value="Isle of Man">Isle of Man</option>
+              <option title="Israel" value="Israel">Israel</option>
+              <option title="Italy" value="Italy">Italy</option>
+              <option title="Jamaica" value="Jamaica">Jamaica</option>
+              <option title="Japan" value="Japan">Japan</option>
+              <option title="Jersey" value="Jersey">Jersey</option>
+              <option title="Jordan" value="Jordan">Jordan</option>
+              <option title="Kazakhstan" value="Kazakhstan">Kazakhstan</option>
+              <option title="Kenya" value="Kenya">Kenya</option>
+              <option title="Kiribati" value="Kiribati">Kiribati</option>
+              <option title="Korea, Democratic People's Republic of" value="Korea, Democratic People's Republic of">Korea, Democratic People's Republic of</option>
+              <option title="Korea, Republic of" value="Korea, Republic of">Korea, Republic of</option>
+              <option title="Kuwait" value="Kuwait">Kuwait</option>
+              <option title="Kyrgyzstan" value="Kyrgyzstan">Kyrgyzstan</option>
+              <option title="Lao People's Democratic Republic" value="Lao People's Democratic Republic">Lao People's Democratic Republic</option>
+              <option title="Latvia" value="Latvia">Latvia</option>
+              <option title="Lebanon" value="Lebanon">Lebanon</option>
+              <option title="Lesotho" value="Lesotho">Lesotho</option>
+              <option title="Liberia" value="Liberia">Liberia</option>
+              <option title="Libya" value="Libya">Libya</option>
+              <option title="Liechtenstein" value="Liechtenstein">Liechtenstein</option>
+              <option title="Lithuania" value="Lithuania">Lithuania</option>
+              <option title="Luxembourg" value="Luxembourg">Luxembourg</option>
+              <option title="Macao" value="Macao">Macao</option>
+              <option title="Macedonia, the former Yugoslav Republic of" value="Macedonia, the former Yugoslav Republic of">Macedonia, the former Yugoslav Republic of</option>
+              <option title="Madagascar" value="Madagascar">Madagascar</option>
+              <option title="Malawi" value="Malawi">Malawi</option>
+              <option title="Malaysia" value="Malaysia">Malaysia</option>
+              <option title="Maldives" value="Maldives">Maldives</option>
+              <option title="Mali" value="Mali">Mali</option>
+              <option title="Malta" value="Malta">Malta</option>
+              <option title="Marshall Islands" value="Marshall Islands">Marshall Islands</option>
+              <option title="Martinique" value="Martinique">Martinique</option>
+              <option title="Mauritania" value="Mauritania">Mauritania</option>
+              <option title="Mauritius" value="Mauritius">Mauritius</option>
+              <option title="Mayotte" value="Mayotte">Mayotte</option>
+              <option title="Mexico" value="Mexico">Mexico</option>
+              <option title="Micronesia, Federated States of" value="Micronesia, Federated States of">Micronesia, Federated States of</option>
+              <option title="Moldova, Republic of" value="Moldova, Republic of">Moldova, Republic of</option>
+              <option title="Monaco" value="Monaco">Monaco</option>
+              <option title="Mongolia" value="Mongolia">Mongolia</option>
+              <option title="Montenegro" value="Montenegro">Montenegro</option>
+              <option title="Montserrat" value="Montserrat">Montserrat</option>
+              <option title="Morocco" value="Morocco">Morocco</option>
+              <option title="Mozambique" value="Mozambique">Mozambique</option>
+              <option title="Myanmar" value="Myanmar">Myanmar</option>
+              <option title="Namibia" value="Namibia">Namibia</option>
+              <option title="Nauru" value="Nauru">Nauru</option>
+              <option title="Nepal" value="Nepal">Nepal</option>
+              <option title="Netherlands" value="Netherlands">Netherlands</option>
+              <option title="New Caledonia" value="New Caledonia">New Caledonia</option>
+              <option title="New Zealand" value="New Zealand">New Zealand</option>
+              <option title="Nicaragua" value="Nicaragua">Nicaragua</option>
+              <option title="Niger" value="Niger">Niger</option>
+              <option title="Nigeria" value="Nigeria">Nigeria</option>
+              <option title="Niue" value="Niue">Niue</option>
+              <option title="Norfolk Island" value="Norfolk Island">Norfolk Island</option>
+              <option title="Northern Mariana Islands" value="Northern Mariana Islands">Northern Mariana Islands</option>
+              <option title="Norway" value="Norway">Norway</option>
+              <option title="Oman" value="Oman">Oman</option>
+              <option title="Pakistan" value="Pakistan">Pakistan</option>
+              <option title="Palau" value="Palau">Palau</option>
+              <option title="Palestinian Territory, Occupied" value="Palestinian Territory, Occupied">Palestinian Territory, Occupied</option>
+              <option title="Panama" value="Panama">Panama</option>
+              <option title="Papua New Guinea" value="Papua New Guinea">Papua New Guinea</option>
+              <option title="Paraguay" value="Paraguay">Paraguay</option>
+              <option title="Peru" value="Peru">Peru</option>
+              <option title="Philippines" value="Philippines">Philippines</option>
+              <option title="Pitcairn" value="Pitcairn">Pitcairn</option>
+              <option title="Poland" value="Poland">Poland</option>
+              <option title="Portugal" value="Portugal">Portugal</option>
+              <option title="Puerto Rico" value="Puerto Rico">Puerto Rico</option>
+              <option title="Réunion" value="Réunion">Réunion</option>
+              <option title="Romania" value="Romania">Romania</option>
+              <option title="Russian Federation" value="Russian Federation">Russian Federation</option>
+              <option title="Rwanda" value="Rwanda">Rwanda</option>
+              <option title="Saint Barthélemy" value="Saint Barthélemy">Saint Barthélemy</option>
+              <option title="Saint Helena, Ascension and Tristan da Cunha" value="Saint Helena, Ascension and Tristan da Cunha">Saint Helena, Ascension and Tristan da Cunha</option>
+              <option title="Saint Kitts and Nevis" value="Saint Kitts and Nevis">Saint Kitts and Nevis</option>
+              <option title="Saint Lucia" value="Saint Lucia">Saint Lucia</option>
+              <option title="Saint Martin (French part)" value="Saint Martin (French part)">Saint Martin (French part)</option>
+              <option title="Saint Pierre and Miquelon" value="Saint Pierre and Miquelon">Saint Pierre and Miquelon</option>
+              <option title="Saint Vincent and the Grenadines" value="Saint Vincent and the Grenadines">Saint Vincent and the Grenadines</option>
+              <option title="Samoa" value="Samoa">Samoa</option>
+              <option title="San Marino" value="San Marino">San Marino</option>
+              <option title="Sao Tome and Principe" value="Sao Tome and Principe">Sao Tome and Principe</option>
+              <option title="Saudi Arabia" value="Saudi Arabia">Saudi Arabia</option>
+              <option title="Senegal" value="Senegal">Senegal</option>
+              <option title="Serbia" value="Serbia">Serbia</option>
+              <option title="Seychelles" value="Seychelles">Seychelles</option>
+              <option title="Sierra Leone" value="Sierra Leone">Sierra Leone</option>
+              <option title="Singapore" value="Singapore">Singapore</option>
+              <option title="Sint Maarten (Dutch part)" value="Sint Maarten (Dutch part)">Sint Maarten (Dutch part)</option>
+              <option title="Slovakia" value="Slovakia">Slovakia</option>
+              <option title="Slovenia" value="Slovenia">Slovenia</option>
+              <option title="Solomon Islands" value="Solomon Islands">Solomon Islands</option>
+              <option title="Somalia" value="Somalia">Somalia</option>
+              <option title="South Africa" value="South Africa">South Africa</option>
+              <option title="South Georgia and the South Sandwich Islands" value="South Georgia and the South Sandwich Islands">South Georgia and the South Sandwich Islands</option>
+              <option title="South Sudan" value="South Sudan">South Sudan</option>
+              <option title="Spain" value="Spain">Spain</option>
+              <option title="Sri Lanka" value="Sri Lanka">Sri Lanka</option>
+              <option title="Sudan" value="Sudan">Sudan</option>
+              <option title="Suriname" value="Suriname">Suriname</option>
+              <option title="Svalbard and Jan Mayen" value="Svalbard and Jan Mayen">Svalbard and Jan Mayen</option>
+              <option title="Swaziland" value="Swaziland">Swaziland</option>
+              <option title="Sweden" value="Sweden">Sweden</option>
+              <option title="Switzerland" value="Switzerland">Switzerland</option>
+              <option title="Syrian Arab Republic" value="Syrian Arab Republic">Syrian Arab Republic</option>
+              <option title="Taiwan, Province of China" value="Taiwan, Province of China">Taiwan, Province of China</option>
+              <option title="Tajikistan" value="Tajikistan">Tajikistan</option>
+              <option title="Tanzania, United Republic of" value="Tanzania, United Republic of">Tanzania, United Republic of</option>
+              <option title="Thailand" value="Thailand">Thailand</option>
+              <option title="Timor-Leste" value="Timor-Leste">Timor-Leste</option>
+              <option title="Togo" value="Togo">Togo</option>
+              <option title="Tokelau" value="Tokelau">Tokelau</option>
+              <option title="Tonga" value="Tonga">Tonga</option>
+              <option title="Trinidad and Tobago" value="Trinidad and Tobago">Trinidad and Tobago</option>
+              <option title="Tunisia" value="Tunisia">Tunisia</option>
+              <option title="Turkey" value="Turkey">Turkey</option>
+              <option title="Turkmenistan" value="Turkmenistan">Turkmenistan</option>
+              <option title="Turks and Caicos Islands" value="Turks and Caicos Islands">Turks and Caicos Islands</option>
+              <option title="Tuvalu" value="Tuvalu">Tuvalu</option>
+              <option title="Uganda" value="Uganda">Uganda</option>
+              <option title="Ukraine" value="Ukraine">Ukraine</option>
+              <option title="United Arab Emirates" value="United Arab Emirates">United Arab Emirates</option>
+              <option title="United Kingdom" value="United Kingdom">United Kingdom</option>
+              <option title="United States" value="United States">United States</option>
+              <option title="United States Minor Outlying Islands" value="United States Minor Outlying Islands">United States Minor Outlying Islands</option>
+              <option title="Uruguay" value="Uruguay">Uruguay</option>
+              <option title="Uzbekistan" value="Uzbekistan">Uzbekistan</option>
+              <option title="Vanuatu" value="Vanuatu">Vanuatu</option>
+              <option title="Venezuela, Bolivarian Republic of" value="Venezuela, Bolivarian Republic of">Venezuela, Bolivarian Republic of</option>
+              <option title="Viet Nam" value="Viet Nam">Viet Nam</option>
+              <option title="Virgin Islands, British" value="Virgin Islands, British">Virgin Islands, British</option>
+              <option title="Virgin Islands, U.S." value="Virgin Islands, U.S.">Virgin Islands, U.S.</option>
+              <option title="Wallis and Futuna" value="Wallis and Futuna">Wallis and Futuna</option>
+              <option title="Western Sahara" value="Western Sahara">Western Sahara</option>
+              <option title="Yemen" value="Yemen">Yemen</option>
+              <option title="Zambia" value="Zambia">Zambia</option>
+              <option title="Zimbabwe" value="Zimbabwe">Zimbabwe</option>
+            </select>
+            </span>
+            <div id="transfer_channel_row" style="display:none; align-items:center; margin:0 0 12px 0; text-align:left;">
+              <label class="special" style="padding-top:0; line-height:22px; text-align:left;">Transfer Channel</label>
+              <div style="display:inline-flex; align-items:center; height:22px; margin-left:0;">
+                <input type="radio" name="transfer_channel" value="SWIFT" id="tc_swift" checked="checked" style="width:auto; height:auto; border:none; margin:0 5px 0 0; cursor:pointer;" />
+                <label for="tc_swift" style="width:auto; float:none; margin:0 20px 0 0; font-weight:normal; display:inline-flex; align-items:center; cursor:pointer;">SWIFT
+                  <div class="custom-tooltip" style="margin-left:4px; display:inline-flex;">
+                    <span style="background:#1b75bc; color:white; border-radius:50%; width:16px; height:16px; display:inline-block; text-align:center; font-weight:bold; font-size:12px; line-height:16px;">i</span>
+                    <span class="tooltiptext">Send money worldwide, delivered within 2–5 business days. Transfer fees and correspondent bank charges apply.</span>
+                  </div>
+                </label>
+
+                <input type="radio" name="transfer_channel" value="AFAQ" id="tc_afaq" style="width:auto; height:auto; border:none; margin:0 5px 0 0; cursor:pointer;" />
+                <label for="tc_afaq" style="width:auto; float:none; margin:0; font-weight:normal; display:inline-flex; align-items:center; cursor:pointer;">AFAQ
+                  <div class="custom-tooltip" style="margin-left:4px; display:inline-flex;">
+                    <span style="background:#1b75bc; color:white; border-radius:50%; width:16px; height:16px; display:inline-block; text-align:center; font-weight:bold; font-size:12px; line-height:16px;">i</span>
+                    <span class="tooltiptext">Send money instantly during business hours. Transfer fees apply, with no correspondent bank charges.</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+            <span>
+            <label class="special">Amount</label>
+            <input type="text" id="figures" name="figures"  style="width:400px;" />
+            </span> 
+			<span>
+            <label class="special">Amount in words</label>
+            <input type="text"  name="amountinwords" style="width:400px;" />
+            </span>
+            <!-- <span> <label class="special">Amount in Words</label><input type="text" id="words" name="words" style="width:400px;" /></span> --> 
+            <span>
+            <label class="special">Beneficiary Full Name</label>
+            <input type="text"  name="bname" style="width:400px;" />
+            </span>
+
+			<span>
+            <label class="special">Beneficiary Address</label>
+            <input type="text"  name="baddress" style="width:400px;" />
+            </span> <span>
+            <label class="special">Beneficiary City</label>
+            <input type="text"  name="bcity" style="width:400px;" />
+            </span> <span>
+            
+            <label class="special">Beneficiary Account No / IBAN</label>
+            <select name="acctype" style="width:100px;"><option value="IBAN">IBAN</option><option value="Account No">Account No</option></select>
+            <input type="text" name="bacc" style="width:295px;" />
+            </span> <span>
+            <label class="special">Beneficiary Bank BIC Code</label>
+            <input type="text" name="bbn" id="bbn_input" style="width:400px; text-transform:uppercase" />
+            </span> <span>
+            <label class="special">Beneficiary Bank Name</label>
+            <input type="text" name="bbname" id="bbname_input" style="width:400px; text-transform:uppercase" />
+            </span> <span>
+            <label class="special">Beneficiary Bank Address</label>
+            <input type="text" name="bbadd" style="width:400px; text-transform:uppercase" />
+            </span> <span>
+            <label class="special">Bank Code Type</label>
+            <select name="bct" style="width:100px;">
+              <option value="" selected="selected"></option>
+              <option value="IFSC">IFSC</option>
+              <option value="BSB">BSB</option>
+              <option value="ABA">ABA</option>
+              <option value="AT">AT</option>
+              <option value="AU">AU</option>
+              <option value="BL">BL</option>
+              <option value="CC">CC</option>
+              <option value="CH">CH</option>
+              <option value="CP">CP</option>
+              <option value="ES">ES</option>
+              <option value="FW">FW</option>
+              <option value="HK">HK</option>
+              <option value="IE">IE</option>
+              <option value="IT">IT</option>
+              <option value="NZ">NZ</option>
+              <option value="PT">PT</option>
+              <option value="RU">RU</option>
+              <option value="SC">SC</option>
+              <option value="SW">SW</option>
+              <option value="ZA">ZA</option>
+            </select>
+            <input type="text" name="bctt" style="width:287px; margin-left:10px;" />
+            </span> <span>
+            <label class="special">Beneficiary Reference</label>
+            <input type="text" name="tp" style="width:400px;" />
+            </span>
+            <div id="purpose_code_container">
+            <span>
+            <label class="special">Payment Purpose (Regulatory Requirement)</label>
+            <select name="main_purpose" id="main_purpose" onchange="updateSubPurpose()">
+				<option value="">Select Purpose</option>
+			</select>
+            </span> <span>
+            <label class="special">Payment Details</label>
+            <select name="sub_purpose" id="sub_purpose">
+				<option value="">Select Payment Details</option>
+            </select>
+            </span>
+            </div>
+            </div>
+        </div>
+        <div id="standing" class="payment" style="display:none;" >
+          <div id="title2">
+            <h1>Standing Order Details</h1>
+          </div>
+          <div> <span  style=" height:21px; ">
+            <label class="special">Start Date</label>
+            <input type="text" id="startdate" name="startdate" style="width:400px;"  />
+            </span> <span style=" height:21px; ">
+            <label class="special">End Date</label>
+            <input type="text" id="enddate" name="enddate" style="width:400px;" />
+            </span> <span>
+            <label class="special">Payment Frequency</label>
+            <select name="paymentfreq" id="paymentfreq" style="width:400px;">
+              <option value="">Select Frequency</option>
+              <option value="Daily">Daily</option>
+              <option value="Weekly">Weekly</option>
+              <option value="Monthly">Monthly</option>
+              <option value="Yearly">Yearly</option>
+              <option value="End of Month">End of Month</option>
+              <option value="End of Quarter">End of Quarter</option>
+            </select>
+            </span> <span>
+            <label class="special">Number of Transfer</label>
+            <input type="text" name="numberoftransfer" id="numberoftransfer" value="0"  style="width:400px;" />
+            </span> </div>
+        </div>
+        <div id="payment" style="margin-top:0px;">
+          <div id="title2">
+            <h1>Charges</h1>
+          </div>
+          <div> <span> <span style="float:left">
+            <label  >Correspondent Bank Charges </label>
+            </span> <span style="float:left; margin-left:100px;">
+            <label style="margin-top:0px; padding:0;"  >For Beneficiary</label>
+            </span><span style="float:left; margin-left:10px;">
+            <input type="radio" name="cbc" value="On Beneficiary" style="width:20px;" />
+            </span> <span style="float:left; margin-left:100px;">
+            <label  style="margin-top:0px; padding:0;"  >For Customer / Remitter</label>
+            </span><span style="float:left; margin-left:10px;">
+            <input type="radio" name="cbc" value="On Customer / Remitter" style="width:20px;" />
+            </span> </span> <span style="clear:both"> <span style="float:left">
+            <label  >Dukhan Bank Charges </label>
+            </span> <span style="float:left; margin-left:154px;">
+            <label style="margin-top:0px; padding:0;"  >For Beneficiary</label>
+            </span><span style="float:left; margin-left:10px;">
+            <input type="radio" name="cbc1" value="On Beneficiary" style="width:20px;" />
+            </span> <span style="float:left; margin-left:100px;">
+            <label style="margin-top:0px; padding:0;"  >For Customer / Remitter</label>
+            </span><span style="float:left; margin-left:10px;">
+            <input type="radio" name="cbc1" value="On Customer / Remitter" style="width:20px;" />
+            </span> </span> </div>
+        </div>
+        <div id="payment">
+          <div class="left">
+            <div id="title3" style="border-right:#e0ebf6 solid 1px; width:499px;">
+              <h1>Applicants Details</h1>
+            </div>
+            <div style="border-right:#e0ebf6 solid 1px;  margin-top:0px; height:205px;"> <span style="padding-top:10px;">
+              <label class="small">Name</label>
+              <input type="text" name="pname"  />
+              </span> <span>
+              <label style="display:block">Debit my Account No</label>
+              <input type="text" name="debit" id="debit" style="width:400px; margin-top:10px;" />
+              </span> <span>
+              <label  class="small">Tel / Mobile Number</label>
+              <input type="text" name="tel" />
+              </span> <span>
+              <label style="display:block">Applicant Reference No</label>
+              <input type="text" name="ibanad" id="ibanad" style="width:400px; margin-top:10px;" value=" " />
+              </span> </div>
+          </div>
+          <div class="left">
+            <div id="title3" >
+              <h1>For Bank Use Only</h1>
+            </div>
+            <div> <span >
+              <label  class="small">FX Rate</label>
+              <input type="text" name="name" readonly="readonly" />
+              </span> <span>
+              <label  class="small">Reference No</label>
+              <input type="text" name="number" readonly="readonly"/>
+              </span> </div>
+          </div>
+        </div>
+        <div id="payment" style="clear:both; margin-top:0px;">
+          <div class="left" style=" margin-top:0px;border-top:#e0ebf6 solid 1px;">
+            <div style="border-right:#e0ebf6 solid 1px;  margin-top:0px; height:50px;"> <span style="padding-top:10px;">
+              <label>Applicant's Signature</label>
+              </span> </div>
+          </div>
+          <div class="left" style=" margin-top:0px;">
+            <div style="margin-left:0px;  margin-top:0px; height:50px;border-top:#e0ebf6 solid 1px;">
+              <div style="width:249px;border-right:#e0ebf6 solid 1px; float:left; height:50px; background:#fff;margin-left:0px;margin-top:0px; "> <span style="padding-top:10px; margin-left:10px;">
+                <label>Reviewed By </label>
+                </span> </div>
+              <div style="width:250px; float:left; height:50px; background:#fff;margin-left:0px;margin-top:0px; "> <span style="padding-top:10px;margin-left:10px;">
+                <label>Authorized By </label>
+                </span> </div>
+            </div>
+          </div>
+        </div>
+      </div>
+  
+        <div style="height:30px; margin-top:20px;float:left;">
+          <input id="terms" type="checkbox" name="terms" style=" width:60px; border:none;" onclick="check()"  />
+          <label style="text-decoration:underline">I Accept The Terms and Conditions</label>
+        </div></br>
+        <div id="print" style="height:30px; display:none; margin-left:25px;font-family:'Tahoma'; font-size:14px; color:#223570;" >
+          <p>I / We accept that the Bank’s General Terms and Conditions for the Operation of Accounts and Electronic Banking Services are applicable to payments and transfers. I / We understand and fully accept that the Bank shall only process this funds transfer instruction as per the information PRINTED in this Form, and shall disregard any hand written amendment and/or insertions made to the printed form.  I further accept that Dukhan Bank will use the account number provided as the basis for the payment and will not check or refer to the beneficiary name or other beneficiary details provided.</p>
+          <input type="submit" class="submit" value="Print" /> </div>
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+		  
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
+
+
+		  
+
+<div id = "boxes" > 
+          
+		  			
+			<div id = "line" style= "float:right;width:100%;  padding-top:10;  height:3px; " > 
+       
+            </div> 
+	
+			 <div id = "leftbox" style= "float:left;width:33%;  height:40px;text-align:right;padding-top:30px;"> 
+                <label class="bold">dukhanbank.com/label>
+         
+            </div>  
+              
+             <div id = "middlebox"style= "float:left; width:33%;  height:40px;   padding-top:20px;"> 
+         <a href="https://www.facebook.com/BarwaBankGroup">   <img style="-webkit-user-select: none;height:30px; " src="./images/facebook.svg"></a>
+         <a href="https://twitter.com/BarwaBankQatar">   <img style="-webkit-user-select: none;height:30px; " src="./images/twitter.svg"></a>
+         <a href="https://www.instagram.com/barwabankqatar/">   <img style="-webkit-user-select: none;height:30px; " src="./images/instagram.svg"></a>
+          <a href="#">  <img style="-webkit-user-select: none;height:30px;  " src="./images/linkedin.svg"></a>
+            </div> 
+              
+            <div id = "rightbox" style= "float:right;width:33%; text-align:left;   height:40px; padding-top:30px;	" > 
+                        
+		
+		<img style="-webkit-user-select: none;  width:20px; vertical-align: middle;float:left;" src="./images/phone.png">    <strong>&nbsp;&nbsp;<label style= "margin-left:5px;">800 8555</strong></label>
+		
+		
+			            </div> 
+			
+			 <div > 
+            <img style="-webkit-user-select: none;   padding-top:10px;" src="./images/borderbottom.png">
+         
+            </div>  
+              
+       <div style="text-align:left; color:#002d74;font-family:diodrum; line-height:15px; font-size:13px; margin-left:30px; padding-right:20px;padding-top:20px;"> 
+
+            </div>  
+			
+        </div> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    
+    </form>
+	</div>  
+</div>
+
+   
+</body>
+</html>

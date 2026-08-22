@@ -1,0 +1,128 @@
+@import url("style.css") print;
+ @page {
+ size: auto;
+ margin: 0mm;
+}
+ @page {
+ margin: 1%;	/* % of page-box width for LR, height for TB */
+ margin-header: 0mm;
+ margin-footer: 0mm;
+		
+/*odd-header-name: myHeader2Odd;
+even-header-name: html_myHTMLHeaderEven;*/
+
+ odd-footer-name: html_myHTMLFooterOdd1;
+ marks: crop;	 /* crop | cross | none */
+}
+
+body {
+	background-color: #FFFFFF;
+	border: solid 1px black;
+	margin: 0px;
+	font-family:helvetica;
+}
+.a4 {
+	padding: 0px;
+	margin: auto;
+	width: 210mm;
+	height: 297mm;
+	position: relative;
+}
+.form01_section .form01_heading h2, .form01_section .form01_heading h3 {
+	padding: 3px;
+	margin: 0px;
+	font-family:trojanpro_bold;
+	font-size:14px;
+}
+.form01_field_input {
+	padding-left: 15px;
+	color: #666;
+	text-align:left;
+}
+.emp_help{
+	color: #666;
+}
+.checked{
+	float:left;
+	width:20px;
+}
+.para{
+	width:600px;
+	float:left;
+	display:block;
+}
+.pad-left-10{
+	padding-left:10px;
+}
+.pad-top-10{
+	padding-top:5px;
+}
+.no-writing-line {
+	border-bottom: none;
+}
+.page-footer {
+	height: 20px;
+	background-color: #666;
+	width: 100%;
+	position: absolute;
+	bottom: 0;
+}
+.page-number {
+	float: right;
+	color: #FFF;
+}
+.form01_element{
+	margin-bottom:1px;
+}
+#barwabank_logo{
+	margin-bottom:10px;
+	width:100%;
+}
+#sign_label{
+	font-size:16px;
+	font-weight:bold;
+}
+.value_left{
+	text-align:left;
+}
+.top_date{
+	float: right;
+	width: 100px;
+	text-align: right;
+	margin-top:-16px;
+}
+.top_content{
+	float: left;
+	width: 300px;
+	text-align: right;
+	margin-top:-16px;
+	padding:0px;
+}
+#logo{
+	foat:left;
+	margin-left:320px;
+}
+.form01_field_input .docs_inputs{
+	margin-top:10px;
+}
+#otherdocs_10_input div.option_label{
+	margin-left:25px;
+	font-size:12px;
+}
+
+.heading_tbl{	
+	width:100%;
+}
+.heading_tbl td{
+    text-align: left;
+	color:#FFF;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-family:trojanpro_bold;	
+}
+
+table{
+	font-size:12px;
+	color: #24366F;
+}

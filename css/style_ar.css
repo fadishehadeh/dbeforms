@@ -1,0 +1,454 @@
+@font-face {
+	font-family: 'TrajanPro-Bold';
+	src: url(../fonts/en/TrojanPro-Bold/TrajanPro-Bold.eot);
+	src: local("O"), url(../fonts/en/TrojanPro-Bold/TrajanPro-Bold.woff) format("woff"),  url(../fonts/en/TrojanPro-Bold/TrajanPro-Bold.ttf) format("truetype"),  url(../fonts/en/TrojanPro-Bold/TrajanPro-Bold.svg#TrajanPro-Bold.svg) format("svg")
+}
+@font-face {
+	font-family: 'GE_Dinar_Two';
+	src: url(../fonts/ar/GE_Dinar_Two/ge_dinar_two_medium-webfont.eot);
+	src: url(../fonts/ar/ge_dinar_two_medium-webfont.woff) format("woff"),  url(../fonts/ar/GE_Dinar_Two/ge_dinar_two_medium-webfont.ttf) format("truetype"),  url(../fonts/ar/GE_Dinar_Two/ge_dinar_two_medium-webfont.svg#ge_dinar_two_medium-webfont.svg) format("svg")
+}
+body, html {
+	padding: 0px;
+	margin: 0px;
+	font-family: Arial, Helvetica, sans-serif;
+}
+#e-form {
+	width: 800px;
+	margin: 20px auto 20px auto;
+	padding: 10px;
+	border: 1px solid #999;
+	box-shadow: 1px 1px 13px #666666;
+	position:relative;
+	direction:rtl;
+}
+#form01_inner {
+	padding-bottom: 10px;
+}
+#barwabank_logo {
+	width: 164px;
+	height: 121px;
+	margin: auto;
+	position:relative;
+}
+/* Inner styles */
+.form01_heading {
+	background-color: #b98535;
+	color: #FFF;
+}
+.form01_heading h2 {
+	text-align: center;
+	padding: 10px 0px 10px 0px;
+	font-size: 16px;
+	text-transform: uppercase;
+	font-weight: normal;
+	font-family: GE_Dinar_Two;
+}
+.form01_heading h3 {
+	text-align: right;
+	padding: 10px;
+	font-size: 16px;
+	text-transform: uppercase;
+	font-weight: normal;
+	font-family: GE_Dinar_Two;
+}
+.form01_content {
+	padding: 10px;
+	font-size: 12px;
+	color: #b98535;
+}
+.form01_content a {
+	color: #b98535;
+	font-weight: bold;
+}
+.form01_col {
+	width: 50%;
+	float: right;
+}
+.form01_element {
+	width: 100%;
+	clear: both;
+	display: block;
+	padding: 0px;
+	margin: 0px 0px 25px 0px;
+}
+.form01_label {
+	width: 50%; 
+	float: right;
+}
+.form01_field_input{
+	width: 50%;
+	float: right;
+}
+.form01_element p {
+	padding: 0px 0px 20px 0px;
+	margin: 0px;
+}
+.form01_label {
+	width: 40%;
+}
+input, select, textarea {
+	border: 1px solid #CCC;
+}
+input, select {
+	padding: 2px;
+}
+input[type=text], textarea {
+	width: 88%;
+	max-width: 88%;
+}
+.form01_col input[type=text] {
+	width: 75%;
+	max-width: 75%;
+}
+select {
+	width: 89.30%;
+	max-width: 89.30%
+}
+select.half{
+	width: 44.65%;
+	max-width: 44.65%;	
+}
+
+select.oneforth{
+	width: 22.325%;
+	max-width: 22.325%;	
+}
+select#shipdetail_docs_days{
+	width: 16.325%;
+	max-width: 16.325%;		
+}
+.onethird, input[type="text"].onethird {
+	width: 100px;
+}
+.col2_section .onethird.half{
+	width:60px;
+}
+.col2_section input[type=text].onethird.half{
+	width:90px;
+}
+.onefourth, input[type="text"].onefourth {
+	width: 236px;
+}
+.fl_left {
+	float: right;
+}
+.fl_right {
+	float: right;
+}
+.help_tip {
+	display: block;
+	font-size: 10px;
+	clear: both;
+}
+.form01_heading h3 .help_tip {
+	display: inline;
+	font-weight: bold;
+}
+
+.form01_heading h3 .subtitle{
+	float:left;
+	padding:0px;
+	margin:0px;
+	width:390px;
+}
+
+.cl {
+	clear: both;
+}
+.ele_left_col_mar {
+	margin-right: 4px;
+}
+.form01_field_input input[type=radio], .form01_field_input input[type=checkbox], .form01_field_input label {
+	float: right;
+}
+.form01_field_input label {
+	width: 92%;
+	padding-left: 4px;
+	text-align: justify;
+	padding-top: 3px;
+}
+.form01_field_collection {
+	display: block;
+	clear: both;
+}
+.form01_input_tp {
+	padding-top: 10px;
+}
+.bot_pad_0 {
+	padding-bottom: 0px;
+}
+.w_max {
+	width: 100%;
+}
+input[type=submit], button, input[type=button] {
+	background-color: #b98535;
+	margin: 0px;
+	padding: 5px 20px 5px 20px;
+	color: #FFF;
+	border: none;
+	cursor: pointer;
+	box-shadow: 2px 1px 4px #8a9999
+}
+input[type=submit]:hover, button {
+	box-shadow: none;
+	box-shadow: 1px 1px 1px #8a9999;
+}
+label.error {
+	background: url('../images/unchecked.gif') no-repeat;
+	padding-right: 16px;
+	margin: 5px 0px 0px 0px;
+	color: #F00;
+	text-align: right;
+	padding-top:0px;
+	background-position:right;
+}
+.w_max label.error{
+	margin-left:20px;
+	clear:both;
+}
+.error_lab_mar_0 label.error{
+	margin-left:0px;
+	margin-top:5px;
+	float:right;
+	margin-bottom:20px;
+}
+label.valid {
+	background: url('../images/checked.gif') no-repeat;
+	width: 16px;
+	height: 16px;
+	float: left;
+}
+.no_success_label label.valid{
+	display:none !important;
+}
+.error_container {
+	display: block;
+	clear: both;
+	padding-right: 20px;
+}
+.amount_error {
+	float: left;
+	clear: none;
+	padding-left: 5px;
+	padding-top: 5px;
+}
+.amount_error label {
+	margin: 0px;
+}
+#grnt_effective_date-error {
+	margin-bottom: 10px;
+}
+input.datepicker, 
+input.datepicker_di{
+	float: right;
+	width: 25%;
+	max-width: 25%;
+}
+.date_cal {
+	width: 16px;
+	height: 15px;
+	background-color: transparent;
+	float: right;
+	padding: 0px;
+	margin: 2px 0px 0px 0px;
+	border: none;
+	box-shadow: none;
+	margin-right: 5px;
+}
+.date_cal img {
+	padding: 0px;
+	margin: 0px;
+}
+.datepicker_input label.valid {
+	margin-left: 220px;
+}
+.bot_mar_0{
+  margin-bottom:0px;
+}
+.delivery_input{
+	/*rgin-bottom: 5px;*/
+}
+.delivery_input input[type=radio],.delivery_input input[type=checkbox]{
+	float:left;
+	margin-left:0px;
+}
+.delivery_input label{
+	float:left;
+	width:280px;
+}
+.docs_inputs .form01_label,
+.docs_inputs .form01_field_input,
+.vl_fields .form01_label,
+.vl_fields .form01_field_input{
+	width:auto;
+	float: right;
+	padding-right:5px;
+}
+.docs_inputs .form01_label,
+.docs_inputs .form01_field_input{
+	width:auto;
+	float: left;
+	padding-right:5px;
+}
+.form01_field_input .docs_inputs{
+	margin-top: -3px;
+}
+.form01_field_input .docs_inputs label{
+	padding-top: 5px;
+}
+.top-pad-5{
+	padding-top:5px;
+}
+.option_label input{
+	width: auto;
+	float: none;
+	border-top:none;
+	border-left:none;
+	border-right:none;
+	width: 150px;
+}
+#otherdocs_02_wrapper{
+	width: 100%;
+}
+#otherdocs_02_wrapper label{
+	padding-bottom: 2px;
+}
+#otherdocs_10_input .option_label{
+	width:100%;
+}
+#otherdocs_10_input .option_label input{
+	float:left;
+	display: block;
+	width: 70%;
+	clear:both;
+	margin-left:22px;
+	margin-top:5px;
+}
+#charges_commissions_section select{
+	width: 60%;
+}
+#settlement_01{
+	display: block;
+	width: 300px;
+	margin-top: 10px;
+}
+
+input[type=radio], input[type=checkbox]{
+	border:none;
+}
+.top_date{
+	position: absolute;
+	left:12px;
+	top:115px;
+	color:#c2c2c2;
+	font-size:12px;	
+}
+.top_content{
+	position: absolute;
+	right:12px;
+	top:115px;
+	color:#c2c2c2;	
+	font-size:12px;
+}
+#grnt_expiry_date_no_show_wrapper{
+	padding-top:4px;
+}
+.datepick-month-header, .datepick-month-header select, .datepick-month-header input{
+	width: auto;
+	max-width: auto;
+}
+.docs_inputs .form01_field_input{
+	width:15%;
+}
+
+
+.account_number_type_wrapper select{
+	width:30%;
+	max-width:30%;
+}
+.account_number_type_wrapper input{
+	width:57%;
+	max-width:57%;
+}
+.help_tip_mar_right .help_tip{
+	margin-left:24px;
+}
+.equal_col_section .form01_label{ 
+	width:50%;
+}
+.col2_section select{
+	width:77%;
+	max-width:77%;
+}
+.col2_section input[type=text]{
+	width:75%;
+	max-width:75%;
+}
+.col2_section .w_max select{
+	width:10%;
+}
+.equal_col_section input[type=text]{
+	width:78%;
+	max-width:78%;
+}
+.equal_col_section select{
+	width:80%;
+	max-width:80%;
+}
+#card_opt{
+	width:15%;
+}
+#_hidden{
+	display:none;
+}
+.group_multimodal{
+	background-color:#F9DBAE;
+	padding:5px 0px 5px 0px;
+}
+#lang_switch{
+	position:absolute;
+	top:10px;
+	right:10px;
+}
+#lang_switch a{
+	color:#b98535;
+	text-decoration:none;
+	font-size:12px;	
+}
+input[type="button"].remove_spcard {
+	margin-left:20px;
+}
+input[type="button"].disable_btn{
+	background-color:#E0E0E0;
+	box-shadow:none;
+	display:none;
+}
+input[type="button"].lbtn{
+	margin-left:0px;
+}
+
+.help_tip_mar_right .help_tip{
+	margin-right:24px;
+}
+.vl_fields_checkbox_02.form01_field_input label{
+	width:100%;
+}
+.fld_sp_01 {
+  border-top: 1px solid #f4d8ae;
+  margin-bottom: 20px;
+}
+.amount_error_lbl_right .amount_error{
+	float:right;
+}
+.heading_tbl{	
+	width:100%;
+}
+.heading_tbl td{
+    text-align: right;
+	color:#FFF;
+    font-size: 16px;
+    text-transform: uppercase;
+    font-weight: normal;
+    font-family:trojanpro_bold;	
+}
