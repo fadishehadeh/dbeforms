@@ -265,6 +265,7 @@
         var figures = document.application.figures;
         //var words= document.application.words;  
         var bname = document.application.bname;
+        var bcity = document.application.bcity;
 
         var bacc = document.application.bacc;
         var bbn = document.application.bbn;
@@ -283,6 +284,10 @@
 
         var bbname = document.application.bbname;
 
+
+        if (!required(bcity)) {
+            return false;
+        }
 
         if (required(figures) && CheckDecimal(figures)) {
 
