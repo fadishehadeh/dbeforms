@@ -1,0 +1,606 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=10" />
+<link rel="stylesheet" href="css/style3ar.css" type="text/css" media="screen"/>
+<script src="jquery.min.js" language="javascript" type="text/javascript"></script>
+<script type="text/javascript" src="toword.js"></script>
+
+<!-- Add fancyBox main JS and CSS files -->
+	<script type="text/javascript" src="source/jquery.fancybox.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="source/jquery.fancybox.css?v=2.1.5" media="screen" />
+
+		<script>
+        function check(){
+		if(document.getElementById("terms").checked == true){document.getElementById("print").style.display='block';}else{document.getElementById("print").style.display='none';}	
+			
+			}
+			
+			  function check2(){
+		if(document.getElementById("otherscheck").checked == true){document.getElementById("others").style.display='block';}else{document.getElementById("others").style.display='none';}	
+			
+			}
+        </script>
+		
+ <script type="text/javascript">// <![CDATA[
+    function iban() {
+        var x = document.getElementById("debit").value;
+     
+            var static_bank_code = "BRWA";
+            var static_zeroes = "000000000";
+            var static_country_code = "QA";
+            
+            var tempIBAN = static_bank_code + static_zeroes + x + static_country_code + "00";
+            var asciiIBAN = "";
+            for (i = 0; i < static_bank_code.length; i++) {
+                asciiIBAN += String(Number(static_bank_code[i].charCodeAt(0)) - 55);                
+            }            
+            asciiIBAN += static_zeroes + x;
+            for (i = 0; i < static_country_code.length; i++) {
+                asciiIBAN += String(Number(static_country_code[i].charCodeAt(0)) - 55);
+            }
+            asciiIBAN += "00";
+            
+            var first9digitMod = Number(asciiIBAN.substring(0, 9)) % 97;
+            if (String(first9digitMod).length < 2) {
+                first9digitMod = "0" + String(first9digitMod);
+            }
+            //alert(first9digitMod);
+            var second9digitMod = Number(first9digitMod + asciiIBAN.substring(9, 16)) % 97;
+            if (String(second9digitMod).length < 2) {
+                second9digitMod = "0" + String(second9digitMod);
+            }
+            //alert(second9digitMod);
+            var third9digitMod = Number(second9digitMod + asciiIBAN.substring(16, 23)) % 97;
+            if (String(third9digitMod).length < 2) {
+                third9digitMod = "0" + String(third9digitMod);
+            }
+            //alert(third9digitMod);
+            var fourth9digitMod = Number(third9digitMod + asciiIBAN.substring(23, 30)) % 97;
+            if (String(fourth9digitMod).length < 2) {
+                fourth9digitMod = "0" + String(fourth9digitMod);
+            }
+            //alert(fourth9digitMod);
+            var fifth9digitMod = Number(fourth9digitMod + asciiIBAN.substring(30, asciiIBAN.length)) % 97;
+            if (String(fifth9digitMod).length < 2) {
+                fifth9digitMod = "0" + String(fifth9digitMod);
+            }
+            //alert(fifth9digitMod);
+
+            var checkDigits = 98 - Number(fifth9digitMod);
+            if (String(checkDigits).length < 2) {
+                checkDigits = "0" + String(checkDigits);
+            }
+
+            //alert(checkDigits);
+
+            var validIBAN = static_country_code + checkDigits + static_bank_code + static_zeroes + x;
+
+
+            document.getElementById("ibanad").value = validIBAN;
+        
+    }
+</script>
+        
+        
+		
+   <script>
+
+
+function validateRadio (radios)
+{
+    for (i = 0; i < radios.length; ++ i)
+    {
+        if (radios [i].checked) return true;
+    }
+    alert('Choose On Beneficiary or On Customer');
+	return false;
+	
+}
+   
+   
+     function required(inputtxt)   
+   {  
+   
+
+     if (inputtxt.value.length == 0)  
+      {   
+         alert("All fields are required!"); 
+		 inputtxt.focus();        
+         return false;   
+      }else{
+	return true;
+    }  
+   }
+
+   
+   function allLetter(inputtxt)  
+  {  
+   var letters = /^[A-Za-z]+$/; 
+   if(inputtxt.value.match(letters))  
+     {  
+      return true;  
+     }  
+   else  
+     {  
+     alert("Please input alphabetical characters only");
+	inputtxt.focus();   
+     return false;  
+     }  
+  }  
+
+
+function allnumeric(inputtxt)  
+   {  
+      var numbers = /^[0-9]+$/;  
+      if(inputtxt.value.match(numbers))  
+      {  
+ return true;  
+      }  
+      else  
+      {  
+      alert('Please input numeric characters only');  
+      inputtxt.focus();  
+      return false;  
+      }  
+   } 
+   
+   function CheckDecimal(inputtxt)   
+{   
+var decimal=  /^[-+]?[0-9]+.[0-9]+$/;   
+if(inputtxt.value.match(decimal))   
+{   
+return true;  
+}  
+else  
+{   
+alert('Please input numeric characters only') ;
+ inputtxt.focus();   
+return false;  
+}  
+}   
+ 
+
+
+function printnow(){
+	var figures = document.application.figures;  
+var words= document.application.words;  
+var bname = document.application.bname;  
+
+
+
+var pp = document.application.pp;
+
+
+
+var pname = document.application.pname;
+var tel = document.application.tel;
+var debit = document.application.debit;
+
+if( required(figures) && CheckDecimal(figures))  
+{
+ 
+	  
+	 if(required(bname)) {
+
+		  // Validate Purpose Codes (QCB Mandate)
+		  var mainPurpose = document.getElementById("main_purpose");
+		  var subPurpose = document.getElementById("sub_purpose");
+
+		  if (!mainPurpose.value) {
+			  alert('الغرض من الدفع (متطلب تنظيمي) مطلوب');
+			  mainPurpose.focus();
+			  return false;
+		  }
+
+		  if (!subPurpose.value) {
+			  alert('تفاصيل الدفع مطلوبة');
+			  subPurpose.focus();
+			  return false;
+		  }
+
+		  if(required(pname))
+		  {
+			  
+			   if(required(debit) && allnumeric(debit))
+		  {
+			  
+		  if(required(tel) && allnumeric(tel))
+		  {
+			  
+		 
+		     // alert('correct');
+			  return true;
+		 
+		 
+		
+		
+		  }
+		  }
+		  }
+		  } 	
+}
+
+return false;
+	
+	}
+	function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+	
+	function getwords(){ 
+		var str = document.getElementById('figures').value;
+		
+		
+		if(str.indexOf(".")==-1){
+			
+			
+			var fig = parseInt(str);
+			var convfig=toWords(fig);
+		
+		convfig=capitaliseFirstLetter(convfig);
+
+	
+		}else{
+			var res = str.split(".");
+	
+	var fig0 = parseInt(res[0]);
+	var fig1 = parseInt(res[1]);
+
+	var convfig0=toWords(fig0);var convfig1=toWords(fig1);
+		var convfig=convfig0+" and "+convfig1+ "DH";
+		convfig=capitaliseFirstLetter(convfig);
+			}
+	
+	
+	 document.getElementById('words').value=convfig;
+	}
+   
+   
+</script>
+
+<script type="text/javascript" language="javascript">
+		$("document").ready(function(){
+    $('#dynamic-select').bind('change', function () { // bind change event to select
+        var url = $(this).val(); // get selected value
+        if (url != '') { // require a URL
+            window.location = url; // redirect
+        }
+        return false;
+    });
+	
+	$("#single_image").fancybox();
+	
+		 var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+
+var yyyy = today.getFullYear();
+if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} today = dd+'/'+mm+'/'+yyyy;
+document.getElementById('dato').innerHTML = today;
+ $('#currentdate').val(today);
+
+	 });
+
+    // QCB Purpose Code Mapping for Individual Customers (Arabic)
+    var purposeMapping = {
+        "50": [
+            {code: "5000", name: "مدفوعات الإيجارات"},
+            {code: "5001", name: "فواتير الخدمات (الصيانة، تصليح، استشارات)"},
+            {code: "5002", name: "فواتير المرافق (الكهرباء، الماء، الغاز، التكييف)"}
+        ],
+        "51": [
+            {code: "5050", name: "شراء الأثاث والمعدات والمستلزمات ومواد الخام"},
+            {code: "5051", name: "رسوم الامتيازات التجارية (Franchise Fees) أو العلامات التجارية (Brands)"},
+            {code: "5052", name: "رسوم الاستيراد والتصدير"},
+            {code: "5053", name: "خدمات تكنولوجيا المعلومات وشراء برامج تقنية"},
+            {code: "5054", name: "مدفوعات النقل / الشحن"},
+            {code: "5055", name: "التسويات القانونية ومصاريف محاماة"},
+            {code: "5056", name: "تطوير البنية التحتية"},
+            {code: "5057", name: "الطلبات / المشتريات / اشتراكات خدمية عبر الإنترنت"}
+        ],
+        "52": [
+            {code: "5100", name: "مدفوعات القروض والفوائد"},
+            {code: "5101", name: "توزيعات المساهمين / أرباح"},
+            {code: "5102", name: "تمويل الاستثمار"},
+            {code: "5103", name: "المعاملات الائتمانية"},
+            {code: "5104", name: "الاستحواذ / التحصيل والدمج"},
+            {code: "5105", name: "تحويلات مالية خارجية"},
+            {code: "5106", name: "الرسوم والعمولات"}
+        ],
+        "53": [
+            {code: "5150", name: "الرواتب والأجور"},
+            {code: "5151", name: "مكافآت"},
+            {code: "5152", name: "علاوات أخرى (تشمل بدلات السفر والإجازات)"},
+            {code: "5153", name: "رسوم المدارس / الجامعات"},
+            {code: "5154", name: "استقطاع التقاعد"},
+            {code: "5155", name: "تعويضات"},
+            {code: "5156", name: "مساهمات الضمان الاجتماعي"},
+            {code: "5157", name: "مستحقات نهاية الخدمة"}
+        ],
+        "54": [
+            {code: "5200", name: "تأمينات عامة"},
+            {code: "5201", name: "تأمين الموظفين"},
+            {code: "5202", name: "تأمين الأصول"},
+            {code: "5203", name: "تأمين الالتزامات"}
+        ],
+        "55": [
+            {code: "5250", name: "مدفوعات المشاريع الرأسمالية"},
+            {code: "5251", name: "مدفوعات البناء والتطوير"},
+            {code: "5252", name: "مدفوعات الصيانة"},
+            {code: "5253", name: "مدفوعات الشركات الاستشارية"}
+        ],
+        "56": [
+            {code: "5300", name: "المبادرات البيئية"}
+        ],
+        "57": [
+            {code: "5350", name: "التحويلات الداخلية بين الشركة أو المجموعة أو الشركات التابعة"},
+            {code: "5351", name: "الاستثمارات المشتركة"},
+            {code: "5352", name: "عمليات الخزينة مثل عمليات التحوط، الودائع، صفقات المبادلة"},
+            {code: "5353", name: "تحويل العملات"}
+        ],
+        "58": [
+            {code: "5400", name: "الخدمات الحكومية"},
+            {code: "5401", name: "مدفوعات محاكم"},
+            {code: "5402", name: "مدفوعات الضرائب"},
+            {code: "5403", name: "مدفوعات الجمارك"}
+        ],
+        "59": [
+            {code: "5450", name: "الاستثمار في العقارات"},
+            {code: "5451", name: "الاستثمار في الأسهم والسندات والصكوك"},
+            {code: "5452", name: "استثمارات أخرى"}
+        ],
+        "60": [
+            {code: "5500", name: "تسوية مستحقات التجار"}
+        ]
+    };
+
+    function updateSubPurpose() {
+        var mainPurpose = document.getElementById("main_purpose").value;
+        var subPurposeSelect = document.getElementById("sub_purpose");
+
+        // Clear existing options
+        subPurposeSelect.innerHTML = '<option value="">اختر تفاصيل الدفع</option>';
+
+        if (mainPurpose && purposeMapping[mainPurpose]) {
+            var subPurposes = purposeMapping[mainPurpose];
+            for (var i = 0; i < subPurposes.length; i++) {
+                var option = document.createElement("option");
+                option.value = subPurposes[i].code;
+                option.text = subPurposes[i].name;
+                subPurposeSelect.appendChild(option);
+            }
+        }
+    }
+
+</script>
+<title>تحويل الأموال - فردي </title>
+
+
+</head>
+
+<body>
+
+ <div id="wrapper"> 
+	<div id="insidewraper">
+    
+    <form name="application" action="tcpdf/examples/barwaar3.php" method="post" onsubmit="return  printnow()">
+   
+     <div id="header">
+       <div style="position:absolute; left:20px; top:30px;"><img src="./images/logo.png" alt="Dukhan Bank" style="height:60px;"></div>
+       <div style="position:absolute; right:0;  top:30px;"><a href="index3.html">English</a></div>
+     <div id="dato" style="position:absolute; right:0;  top:170px;font-family:'Tahoma'; font-size:14px; color:#223570;"></div>
+     </div>
+     <div id="title"><h1 style="padding-right:40px;">
+
+
+            تحويل الأموال – الشركات -
+شيك مصرفي
+
+
+
+
+
+     </h1></div>
+      <div id="first" style="height:20px;"><input type="hidden" name="currentdate" id="currentdate" /></div>  
+         <div id="second" style="height:582px;">
+         
+       <div id="issue" ><div><label class="bold special" style="width:250px;" >نرجو التكرم بإصدار </label><select id="dynamic-select" style="width:300px;">
+         <option value="indexar.html">حوالة داخليه ضمن بنك بروة</option>
+       <option value="index2ar.html" >حوالة خارجية</option>
+       <option value="index3ar.html" selected="selected">شيك مصرفي</option>
+         </select></div>
+         
+    
+         
+         </div>
+         
+         
+       
+         
+     
+         
+         
+          <div id="payment" style="margin-top:0px;">
+         <div id="title2"><h1>بيانات المستفيد</h1></div>
+          <div>
+          
+                 <span> <label class="special" >العملة</label><input type="text" id="currency" name="currency" style="width:400px;" value="QAR" readonly="readonly"/></span>
+         <span> <label class="special"> المبلغ </label><input type="text" id="figures" name="figures" style="width:400px;"  /></span>
+<span> <label class="special">المبلغ بالكلمات  </label><input type="text" id="words" name="words" style="width:400px;" /></span
+             <span> <label class="special">اسم المستفيد </label><input type="text" name="bname" style="width:400px;" /></span>
+       
+           <!--    <span> <label class="special">BLZ / ABA: </label><select name="blz"><option value="Type1">Loan Payment</option><option value="Type2">Salary Payment</option><option value="Type2">Supplier Payment</option></select>  <label><input id="otherscheck" type="checkbox" name="terms" style=" width:20px; border:none; height:12px;" onclick="check2()"  />Others</label><input id="others" type="text" name="amount" style="width:100px; display:none; float:right; margin-right:260px;" /></span> -->
+           
+              
+                             <span> <label class="special" style="direction: rtl; text-align: right;">الغرض من الدفع (متطلب تنظيمي)</label>
+                             <select name="main_purpose" id="main_purpose" onchange="updateSubPurpose()" style="direction: rtl; text-align: right;">
+								<option value="">اختر الغرض الرئيسي</option>
+								<option value="50">المصاريف التشغيلية</option>
+								<option value="51">السلع والخدمات</option>
+								<option value="52">الخدمات المالية</option>
+								<option value="53">الموارد البشرية</option>
+								<option value="54">الخدمات التأمينية </option>
+								<option value="55">مدفوعات المشاريع</option>
+								<option value="56">المسؤولية الاجتماعية</option>
+								<option value="57">المعاملات المؤسسية</option>
+								<option value="58">الخدمات الحكومية</option>
+								<option value="59">الاستثمارات</option>
+								<option value="60">مقدمي خدمات دفع</option>
+							</select>
+                             </span>
+                             <span> <label class="special" style="direction: rtl; text-align: right;">تفاصيل الدفع</label>
+                             <select name="sub_purpose" id="sub_purpose" style="direction: rtl; text-align: right;">
+								<option value="">اختر تفاصيل الدفع</option>
+							</select>
+                             </span>
+          
+          </div>
+          
+          </div>
+          
+          
+         
+          
+          
+          
+          <div id="payment" style="clear:both" >
+        
+          <div class="left">
+          
+      <div id="title3" style="border-left:#EFF5FB  solid 1px; width:499px;"><h1>بيانات مقدم الطلب</h1></div>
+          <div style="border-left:#EFF5FB solid 1px;  margin-top:0px; height:140px;">
+          
+         <span style="padding-top:10px;"> <label class="small">الاسم</label><input type="text" name="pname"  /></span>
+          <span> <label style="display:block">قيدوا على رقم حسابي</label><input type="text" name="debit" id="debit" style="width:400px; margin-top:10px;"  /></span>
+            <span> <label  class="small">رقم الهاتف / الجوال </label><input type="text" name="tel" /></span>
+
+ 
+          
+          </div>
+          
+          </div>
+          
+           <div class="left">
+          
+      <div id="title3" ><h1>لاستخدام البنك فقط :</h1></div>
+          <div>
+          
+     
+ <span> <label class="small">رقم المرجع</label><input type="text" name="number" readonly="readonly" /></span>
+          
+          </div>
+          
+          </div>
+          
+          </div>
+          
+         
+          
+          <div id="payment" style="clear:both; margin-top:0px;">
+        
+          <div class="left" style=" margin-top:0px;border-top:#EFF5FB  solid 1px;">
+          
+      
+          <div style="border-left:#EFF5FB  solid 1px;  margin-top:0px; height:100px;">
+          
+         <span style="padding-top:10px;"> <label>توقيع العميل </label></span>
+                      </div>
+          
+          </div>
+          
+            <div class="left" style=" margin-top:0px;">
+          
+      
+          <div style="margin-right:1px;  margin-top:0px; height:99px;border-top:#EFF5FB 	 solid 1px;-webkit-print-color-adjust: exact;">
+          
+        
+        <div style="width:249px; float:right; height:99px;background:#fff;-webkit-print-color-adjust: exact;margin-right:0px;margin-top:0px;border-bottom:#EFF5FB  solid 1px; ">
+        <span style="padding-top:10px; padding-right:10px; "> <label>روجع من قبل</label></span>
+        </div>
+        <div style="width:249px; float:right; height:99px; background:#fff;-webkit-print-color-adjust: exact;margin-right:0px;margin-top:0px;border-right:#EFF5FB  solid 1px;border-bottom:#EFF5FB  solid 1px; ">
+         <span style="padding-top:10px;padding-right:10px;">  <label>معتمد من </label></span>
+        </div>
+        
+                      </div>
+          
+          </div>
+          
+          </div>
+          
+          
+          
+         
+         
+         
+         </div> 
+         
+     
+        
+
+<div style="height:30px; margin-top:20px;"><input id="terms" type="checkbox" name="terms" style="float:right; width:60px; border:none;" onclick="check()"  /><label style="text-decoration:underline"><a id="single_image" href="images/terms.jpg">أوافق على الشروط والأحكام </a></label></div>
+<div id="print" style="height:40px; display:none; margin-right:25px;margin-left:25px;font-family:'Tahoma'; font-size:14px; color:#223570;" >
+<p>
+أنا أوافق/ نحن نوافق على تطبيق الشروط والأحكام العامة للبنك المتعلقة بعمليات الحسابات البنكية والخدمات المصرفية الإلكترونية المعمول بها في عمليات الدفع والتحويلات .أنا أقبل / نحن نقبل  أن يقوم البنك فقط بتحويل الأموال وفقاً للمعلومات المطبوعة في هذه الاستمارة، ويجب تجاهل أي تعديل  أو إضافة  أدخلت على النموذج المطبوع يدوياً. أنا أقبل / نحن نقبل أيضاً أن يستخدم بنك بروة رقم الحساب المقدم للقيام بالدفع دون التحقق أو الرجوع إلى اسم المستفيد أو أي تفاصيل أخرى مقدمة. 
+</p><input type="submit" class="submit" value="اطبع" style="height:40px;" /></div>
+
+
+
+		
+		</br>
+</br>
+</br>
+</br>
+</br>
+
+
+
+
+<div id = "boxes" > 
+          
+		  			
+			<div id = "line" style= "float:right;width:100%;  padding-top:10;  height:3px; " > 
+       
+            </div> 
+	
+			 <div id = "leftbox" style= "float:left;width:33%;  height:40px;text-align:right;padding-top:30px;"> 
+                <label class="bold">barwabank.com</label>
+         
+            </div>  
+              
+             <div id = "middlebox"style= "float:left; width:33%;  height:40px;   padding-top:20px;"> 
+         <a href="https://www.facebook.com/BarwaBankGroup">   <img style="-webkit-user-select: none;height:30px; " src="./images/facebook.svg"></a>
+         <a href="https://twitter.com/BarwaBankQatar">   <img style="-webkit-user-select: none;height:30px; " src="./images/twitter.svg"></a>
+         <a href="https://www.instagram.com/barwabankqatar/">   <img style="-webkit-user-select: none;height:30px; " src="./images/instagram.svg"></a>
+          <a href="#">  <img style="-webkit-user-select: none;height:30px;  " src="./images/linkedin.svg"></a>
+            </div> 
+              
+            <div id = "rightbox" style= "float:right;width:33%; text-align:left;   height:40px; padding-top:30px;	" > 
+                        
+		
+		<img style="-webkit-user-select: none;  width:20px; vertical-align: middle;float:left;" src="./images/phone.png">    <strong>&nbsp;&nbsp;<label style= "margin-left:5px;">800 8555</strong></label>
+		
+		
+			            </div> 
+			
+			 <div > 
+            <img style="-webkit-user-select: none;   padding-top:10px;" src="./images/borderbottom.png">
+         
+            </div>  
+              
+       <div style="text-align:left; color:#002d74;font-family:diodrum; line-height:15px; font-size:13px; margin-left:30px; padding-right:20px;padding-top:20px;"> 
+
+            </div>  
+			
+        </div> 
+
+
+        </div>
+    </form>
+	</div>  
+</div>
+
+   
+</body>
+</html>

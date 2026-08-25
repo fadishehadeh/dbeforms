@@ -1,0 +1,782 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=10" />
+<link rel="stylesheet" href="css/style.css" type="text/css" media="screen"/>
+<link rel="stylesheet" href="default_zebra.css" type="text/css" media="screen"/>
+
+<script src="jquery.min.js" language="javascript" type="text/javascript"></script>
+<script type="text/javascript" src="toword.js"></script>
+<script type="text/javascript" src="zebra_datepicker.js"></script>
+
+<!-- Add fancyBox main JS and CSS files -->
+	<script type="text/javascript" src="source/jquery.fancybox.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="source/jquery.fancybox.css?v=2.1.5" media="screen" />
+
+
+<script>
+    function check() {
+        if (document.getElementById("terms").checked == true) {
+            document.getElementById("print").style.display = 'block';
+        } else {
+            document.getElementById("print").style.display = 'none';
+        }
+
+    }
+</script>
+
+<script type="text/javascript">
+    // <![CDATA[
+    function iban() {
+        var x = document.getElementById("debit").value;
+
+        var static_bank_code = "BRWA";
+        var static_zeroes = "000000000";
+        var static_country_code = "QA";
+
+        var tempIBAN = static_bank_code + static_zeroes + x + static_country_code + "00";
+        var asciiIBAN = "";
+        for (i = 0; i < static_bank_code.length; i++) {
+            asciiIBAN += String(Number(static_bank_code[i].charCodeAt(0)) - 55);
+        }
+        asciiIBAN += static_zeroes + x;
+        for (i = 0; i < static_country_code.length; i++) {
+            asciiIBAN += String(Number(static_country_code[i].charCodeAt(0)) - 55);
+        }
+        asciiIBAN += "00";
+
+        var first9digitMod = Number(asciiIBAN.substring(0, 9)) % 97;
+        if (String(first9digitMod).length < 2) {
+            first9digitMod = "0" + String(first9digitMod);
+        }
+        //alert(first9digitMod);
+        var second9digitMod = Number(first9digitMod + asciiIBAN.substring(9, 16)) % 97;
+        if (String(second9digitMod).length < 2) {
+            second9digitMod = "0" + String(second9digitMod);
+        }
+        //alert(second9digitMod);
+        var third9digitMod = Number(second9digitMod + asciiIBAN.substring(16, 23)) % 97;
+        if (String(third9digitMod).length < 2) {
+            third9digitMod = "0" + String(third9digitMod);
+        }
+        //alert(third9digitMod);
+        var fourth9digitMod = Number(third9digitMod + asciiIBAN.substring(23, 30)) % 97;
+        if (String(fourth9digitMod).length < 2) {
+            fourth9digitMod = "0" + String(fourth9digitMod);
+        }
+        //alert(fourth9digitMod);
+        var fifth9digitMod = Number(fourth9digitMod + asciiIBAN.substring(30, asciiIBAN.length)) % 97;
+        if (String(fifth9digitMod).length < 2) {
+            fifth9digitMod = "0" + String(fifth9digitMod);
+        }
+        //alert(fifth9digitMod);
+
+        var checkDigits = 98 - Number(fifth9digitMod);
+        if (String(checkDigits).length < 2) {
+            checkDigits = "0" + String(checkDigits);
+        }
+
+        //alert(checkDigits);
+
+        var validIBAN = static_country_code + checkDigits + static_bank_code + static_zeroes + x;
+
+
+        document.getElementById("ibanad").value = validIBAN;
+
+    }
+</script>
+
+<script>
+    function alphanumeric(value) {
+        return /^\w+$/i.test(value);
+    }
+
+    function validateIBAN_ACCOUNT(start) {
+
+        // IBAN valudation based on QAR currency and Qatar country
+        cur = $("select[name='currency']");
+        cur_val = cur.find(":selected").val();
+        accountType = $("select[name='acctype']");
+        bacc = $("input[name='bacc']").val();
+
+        if (cur_val == 'QAR') {
+            accountType.find("option:eq(0)").prop('selected', true);
+            accountType.prop('disabled', true);
+
+            if (typeof bacc.length != 'undefined' && eval(bacc.length) != 29) {
+				
+				if(!start)
+	                alert('The IBAN should be 29 characters long.');
+					
+                return false;
+
+            } else if (!alphanumeric(bacc)) {
+				
+				if(!start)
+	                alert('The IBAN should only contain alphanumeric characters.');
+					
+                return false;
+            }
+        } else {
+            accountType.prop('disabled', false);
+        }
+		
+		return true;
+    }
+
+    $(document).ready(function() {
+	    validateIBAN_ACCOUNT(true);		
+		
+        $("select[name='currency']").change(function() {
+            validateIBAN_ACCOUNT(false);
+        });
+
+    })
+
+    function required(inputtxt) {
+
+
+        if (inputtxt.value.length == 0) {
+            alert("All fields are required!");
+            inputtxt.focus();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    function requireddate(inputtxt) {
+
+
+        if (inputtxt.value.length == 0) {
+            alert("Both start and end date required!");
+            inputtxt.focus();
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+
+    function allLetter(inputtxt) {
+        var letters = /^[A-Za-z]+$/;
+        if (inputtxt.value.match(letters)) {
+            return true;
+        } else {
+            alert("Please input alphabetical characters only");
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+
+    function allnumeric(inputtxt) {
+        var numbers = /^[0-9]+$/;
+        if (inputtxt.value.match(numbers)) {
+            return true;
+        } else {
+            alert('Please input numeric characters only');
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+    function CheckDecimal(inputtxt) {
+        var decimal = /^[-+]?[0-9]+.[0-9]+$/;
+        if (inputtxt.value.match(decimal)) {
+            return true;
+        } else {
+            alert('Please input numeric characters only');
+            inputtxt.focus();
+            return false;
+        }
+    }
+
+
+
+    function printnow() {
+        var figures = document.application.figures;
+        //var words= document.application.words;  
+        var bname = document.application.bname;
+
+        var bbn = document.application.bbn;
+        var tp = document.application.tp;
+
+        var bacc = document.application.bacc;
+
+        var ttype = $("#type-select").val();
+
+
+        var pname = document.application.pname;
+        var tel = document.application.tel;
+        var debit = document.application.debit;
+
+
+        if (required(figures) && CheckDecimal(figures)) {
+
+
+            if (required(bname)) {
+
+
+                if (required(tp)) {
+
+                    if (required(bacc)) {
+
+                        //console.log(validateIBAN_ACCOUNT());
+                        if(!validateIBAN_ACCOUNT(false))
+                        	return false;
+
+
+                        if (ttype == "Standing Order") {
+
+
+
+                            if ($('#startdate').val() == '') {
+                                alert('Start Date is required');
+                                $('#startdate').focus();
+                                return false;
+                            }
+
+                            if ($('#enddate').val() == '') {
+                                alert('End Date is required');
+                                $('#enddate').focus();
+                                return false;
+                            }
+                            if ($('#paymentfreq').val() == '') {
+                                alert('Please Choose a Payment Frequency');
+                                $('#paymentfreq').focus();
+                                return false;
+                            }
+                        }
+
+                        if (required(pname)) {
+
+                            if (required(debit) && allnumeric(debit)) {
+
+                                if (required(tel) && allnumeric(tel)) {
+
+                                    return true;
+
+
+                                }
+
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
+    function capitaliseFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function getwords() {
+        var str = document.getElementById('figures').value;
+
+
+        if (str.indexOf(".") == -1) {
+
+
+            var fig = parseInt(str);
+            var convfig = toWords(fig);
+
+            convfig = capitaliseFirstLetter(convfig);
+
+
+
+
+        } else {
+            var res = str.split(".");
+
+            var fig0 = parseInt(res[0]);
+            var fig1 = parseInt(res[1]);
+
+
+            var convfig0 = toWords(fig0);
+            var convfig1 = toWords(fig1);
+            var convfig = convfig0 + " and " + convfig1 + "Dirham";
+
+            convfig = capitaliseFirstLetter(convfig);
+        }
+
+
+        document.getElementById('words').value = convfig;
+    }
+</script>
+
+<script type="text/javascript" language="javascript">
+    Date.daysBetween = function(date1, date2) {
+        //Get 1 day in milliseconds
+        var one_day = 1000 * 60 * 60 * 24;
+
+        // Convert both dates to milliseconds
+        var date1_ms = date1.getTime();
+        var date2_ms = date2.getTime();
+
+        // Calculate the difference in milliseconds
+        var difference_ms = date2_ms - date1_ms;
+        //take out milliseconds
+        difference_ms = difference_ms / 1000;
+        var seconds = Math.floor(difference_ms % 60);
+        difference_ms = difference_ms / 60;
+        var minutes = Math.floor(difference_ms % 60);
+        difference_ms = difference_ms / 60;
+        var hours = Math.floor(difference_ms % 24);
+        var days = Math.floor(difference_ms / 24);
+
+        // return days + ' days, ' + hours + ' hours, ' + minutes + ' minutes, and ' + seconds + ' seconds';
+        return days
+    }
+
+
+    $("document").ready(function() {
+        $('#dynamic-select').bind('change', function() { // bind change event to select
+            var url = $(this).val(); // get selected value
+            if (url != '') { // require a URL
+                window.location = url; // redirect
+            }
+            return false;
+        });
+
+        $("#type-select").bind('change', function() { // bind change event to select
+            var typo = $(this).val();
+
+            if (typo == 'Standing Order') {
+
+                $("#standing").css("display", "block");
+                $('#second').css("height", "943px");
+            } else {
+
+                $("#standing").css("display", "none");
+                $('#second').css("height", "738px");
+            }
+
+
+        });
+
+
+        $('#paymentfreq').bind('change', function() { // bind change event to select
+            var url = $(this).val(); // get selected value
+
+
+
+
+            var DateDiff = {
+
+                inDays: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000));
+                },
+
+                inWeeks: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 7));
+                },
+
+                inMonths: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 31));
+                },
+
+                inYears: function(d1, d2) {
+                    var t2 = d2.getTime();
+                    var t1 = d1.getTime();
+
+                    return parseInt((t2 - t1) / (24 * 3600 * 1000 * 31 * 12));
+                }
+            }
+
+
+            function modiff(DisplayFrom, DisplayTo) {
+                return DisplayTo.getMonth() -
+                    DisplayFrom.getMonth() +
+                    (12 * (DisplayTo.getFullYear() - DisplayFrom.getFullYear()));
+            }
+
+
+
+
+            date1 = $('#startdate').val();
+
+            res = date1.split("-");
+            year = res[0];
+            month = res[1];
+            day = res[2];
+            var startdate = new Date(year, month, day);
+
+
+
+
+            date2 = $('#enddate').val();
+            res2 = date2.split("-");
+            year2 = res2[0];
+            month2 = res2[1];
+            day2 = res2[2];
+            var enddate = new Date(year2, month2, day2);
+
+            //var nbdays=Date.daysBetween(startdate, enddate);
+            //var nbweeks=Math.floor(nbdays/7);
+            //alert(nbweeks);
+
+
+
+
+            if (url == "Daily") {
+                //alert("<br />Number of <b>days</b>: "+DateDiff.inDays(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inDays(startdate, enddate)) + 1;
+            } else if (url == "Weekly") {
+                //alert("<br />Number of <b>weeks</b> : "+DateDiff.inWeeks(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inWeeks(startdate, enddate)) + 1;
+            } else if (url == "Monthly") {
+                //alert("<br />Number of <b>months</b> : "+DateDiff.inMonths(startdate, enddate));
+                //var inst=modiff(startdate, enddate);
+                //if(day=day2){inst++;}
+                //alert(inst);
+                document.getElementById("numberoftransfer").value = modiff(startdate, enddate) + 1;
+            } else if (url == "Yearly") {
+                //alert("<br />Number of <b>years</b> : "+DateDiff.inYears(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (DateDiff.inYears(startdate, enddate)) + 1;
+            } else if (url == "End of Quarter") {
+                //alert("<br />Number of <b>years</b> : "+DateDiff.inYears(startdate, enddate));
+                document.getElementById("numberoftransfer").value = (quarterDiff(startdate, enddate)) + 1;
+            }
+
+
+
+
+        });
+
+
+        function quarterDiff(d1, d2) {
+            firstQuarter = getQuarter(d1);
+            secondQuarter = getQuarter(d2);
+            return (1 + Math.abs(firstQuarter - secondQuarter));
+        }
+
+        function getQuarter(dd) {
+            return (dd.getFullYear() * 4) + ((dd.getMonth() - 1) / 3);
+        }
+
+
+        $("#single_image").fancybox();
+
+        var today = new Date();
+        var dd = today.getDate();
+        var mm = today.getMonth() + 1; //January is 0!
+
+        var yyyy = today.getFullYear();
+        if (dd < 10) {
+            dd = '0' + dd
+        }
+        if (mm < 10) {
+            mm = '0' + mm
+        }
+        today = dd + '/' + mm + '/' + yyyy;
+        document.getElementById('dato').innerHTML = today;
+        $('#currentdate').val(today);
+
+        $('#startdate').Zebra_DatePicker({
+            direction: true,
+            pair: $('#enddate')
+        });
+        $('#enddate').Zebra_DatePicker({
+            direction: 1
+        });
+
+    });
+</script>	
+
+
+<title>Funds transfer </title>
+
+
+</head>
+
+<body>
+
+ <div id="wrapper"> 
+	<div id="insidewraper">
+    
+    <form name="application" action="tcpdf/examples/barwa.php" method="post" onsubmit="return  printnow()">
+   
+    <div id="header">
+	<div style="position:absolute; left:20px; top:30px;"><img src="./images/logo.png" alt="Dukhan Bank" style="height:60px;"></div>
+	<div style="position:absolute; right:0; top:30px;text-align:right;"><a href="indexar.html">العربية</a></div>
+
+	</br>
+	</br>
+
+
+	
+    <div id="dato" style="position:absolute; right:0;  top:170px;font-family:'Tahoma'; font-size:14px; color:#223570;"></div>
+    </div>
+    <div id="pagetitle"><h2 style="padding-left:40px;">Funds Transfer - Internal Transfer Within Dukhan Bank</h2></div>
+     <div id="title"><h1 style="padding-left:40px;">Please Issue</h1></div>
+       <div id="first" style="height:20px; "><input type="hidden" name="currentdate" id="currentdate" /></div> 
+         <div id="second" style="height:732px;">
+         
+         <div id="issue" style="height:25px;" ><div><label class="bold">&nbsp;</label><select id="dynamic-select" name="issue" style="width:300px;">
+         <option value="index.html" selected="selected">Internal Transfer Within Dukhan Bank</option>
+       <option value="index2.html">Electronic Payment</option>
+       <option value="index3.html">Manager Cheque</option>
+         </select></div></div>
+              <div id="issue" style="height:25px;" ><div><label class="bold">&nbsp;</label><select id="type-select" name="issue2" style="width:300px;">
+         <option value="One Off Payment" selected="selected">One Off Payment</option>
+       <option value="Standing Order">Standing Order</option>
+      
+         </select></div></div>
+          
+         
+          <div id="payment" style="margin-top:0px;">
+         <div id="title2"><h1>Payment and Beneficiary Details</h1></div>
+          <div>
+          
+               <span> <label class="special" >Currency</label><select name="currency">
+      
+         <option value="EUR">EUR</option>
+          <option value="AED">AED</option>
+          <option value="AUD">AUD</option>
+          <option value="BHD">BHD</option>
+          <option value="CAD">CAD</option>
+          <option value="CHF">CHF</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="HKD">HKD</option>
+          <option value="INR">INR</option>
+          <option value="JPY">JPY</option>
+          <option value="KWD">KWD</option>
+          <option value="OMR">OMR</option>
+          <option value="QAR" selected="selected">QAR</option>
+          <option value="SAR">SAR</option>
+          <option value="SGD">SGD</option>
+          <option value="USD">USD</option>
+         </select></span>
+            <span> <label class="special">Amount</label><input type="text" id="figures" name="figures" style="width:400px;"  /></span>
+          <span> <label class="special">Amount in Words</label><input type="text" id="words" name="words" style="width:400px;" /></span> 
+             <span> <label class="special">Beneficiary Name</label><input type="text" name="bname" style="width:400px;" /></span>
+               
+              <span> <label class="special">Beneficiary Bank Name</label><input type="text" name="bbn" value="DUKHAN BANK" readonly="readonly" style="width:400px;" /></span>
+                <span> <label class="special">Beneficiary Reference</label><input type="text" name="tp" style="width:400px;" /></span> 
+               <span> <label class="special">Beneficiary Account No / IBAN</label>
+               
+				<select name="acctype" style="width:100px;"><option value="IBAN">IBAN</option><option value="Account No">Account No</option></select>               
+               
+               
+               <input type="text" name="bacc" style="width:296px;" /></span>   
+               
+          
+          </div>
+          
+          </div>
+          
+          
+           <div id="standing" class="payment" style="display:none;" >
+           
+         <div id="title2"><h1>Standing Order Details</h1></div>
+          <div>
+
+           
+            <span  style=" height:21px; "> <label class="special">Start Date</label><input type="text" id="startdate" name="startdate" style="width:400px;"  /></span>
+             <span style=" height:21px; "> <label class="special">End Date</label><input type="text" id="enddate" name="enddate" style="width:400px;" /></span>
+               <span> <label class="special">Payment Frequency</label><select name="paymentfreq" id="paymentfreq" style="width:400px;"><option value="">Select Frequency</option><option value="Daily">Daily</option><option value="Weekly">Weekly</option><option value="Monthly">Monthly</option><option value="Yearly">Yearly</option><option value="End of Month">End of Month</option><option value="End of Quarter">End of Quarter</option></select></span>   
+               
+              <span> <label class="special">Number of Transfer</label><input type="text" id="numberoftransfer" name="numberoftransfer" value="0"  style="width:400px;" /></span>
+               
+             
+               
+          
+          </div>
+          
+          </div>
+          
+          
+          
+      
+          
+          
+          
+          <div id="payment">
+        
+          <div class="left">
+          
+      <div id="title3" style="border-right:#e0ebf6 solid 1px; width:499px;"><h1>Applicant Details</h1></div>
+          <div style="border-right:#e0ebf6 solid 1px;  margin-top:0px; height:220px;">
+          
+         <span style="padding-top:10px;"> <label class="small">Name</label><input type="text" name="pname" /></span>
+          <span> <label style="display:block">Debit my Account No</label><input type="text" name="debit" id="debit" style="width:400px; margin-top:10px;"/></span>
+            <span> <label class="small">Tel / Mobile Number</label><input type="text" name="tel" /></span>
+
+  <span> <label style="display:block">Applicant Reference No</label><input type="text" name="ibanad" id="ibanad" style="width:400px; margin-top:10px;" value=" " /></span>
+          
+          </div>
+          
+          </div>
+          
+           <div class="left">
+          
+      <div id="title3" ><h1>For Bank Use Only</h1></div>
+          <div>
+          
+         <span > <label class="small">FX Rate</label><input type="text" name="name" readonly="readonly" /></span>
+           
+ 
+          
+          </div>
+          
+          </div>
+          
+          </div>
+          
+         
+          
+          <div id="payment" style="clear:both; margin-top:0px;">
+        
+          <div class="left" style=" margin-top:0px;border-top:#e0ebf6 solid 1px;">
+          
+      
+          <div style="border-right:#e0ebf6 solid 1px;  margin-top:0px; height:50px;">
+          
+         <span style="padding-top:10px;"> <label style="width:400px;">Applicant's Signature </label></span>
+                      </div>
+          
+          </div>
+          
+            <div class="left" style=" margin-top:0px;">
+          
+      
+          <div style="margin-left:0px;  margin-top:0px; height:99px;border-top:#e0ebf6 solid 1px;-webkit-print-color-adjust: exact;">
+          
+        
+        <div style="width:249px;border-right:#e0ebf6 solid 1px; float:left; height:50px;background:#fff;-webkit-print-color-adjust: exact;margin-left:0px;margin-top:0px; ">
+        <span style="padding-top:10px; margin-left:10px;"> <label>Reviewed By </label></span>
+        </div>
+        <div style="width:250px; float:left; height:50x; background:#fff;-webkit-print-color-adjust: exact;margin-left:0px;margin-top:0px; ">
+         <span style="padding-top:10px;margin-left:10px;"> <label>Authorized By </label></span>
+        </div>
+        
+                      </div>
+          
+          </div>
+          
+          </div>
+          
+          
+          
+         
+         
+         
+         </div> 
+      
+        
+
+<div style="height:30px; margin-top:20px;"><input id="terms" type="checkbox" name="terms" style="float:left; width:60px; border:none;" onclick="check()"  /><label style="text-decoration:underline">I Accept The Terms and Conditions</label></div>
+</br>
+
+<div id="print" style="height:30px; display:none; margin-left:25px;font-family:'Tahoma'; font-size:14px; color:#223570;" >
+<p>I / We accept that the Bank’s General Terms and Conditions for the Operation of Accounts and Electronic Banking Services are applicable to payments and transfers. I / We understand and fully accept that the Bank shall only process this funds transfer instruction as per the information PRINTED in this Form, and shall disregard any hand written amendment and/or insertions made to the printed form.  I further accept that Dukhan Bank will use the account number provided as the basis for the payment and will not check or refer to the beneficiary name or other beneficiary details provided.</p>
+<input type="submit" class="submit" value="Print" /></div>
+
+
+
+
+
+
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
+
+
+
+<div id = "boxes" > 
+          
+		  			
+			<div id = "line" style= "float:right;width:100%;  padding-top:10;  height:3px; " > 
+       
+            </div> 
+	
+			 <div id = "leftbox" style= "float:left;width:33%;  height:40px;text-align:right;padding-top:30px;"> 
+                <label class="bold">dukhanbank.com</label>
+         
+            </div>  
+              
+            <div id = "middlebox"style= "float:left; width:33%;  height:40px;   padding-top:20px;"> 
+         <a href="https://www.facebook.com/BarwaBankGroup">   <img style="-webkit-user-select: none;height:30px; " src="./images/facebook.svg"></a>
+         <a href="https://twitter.com/BarwaBankQatar">   <img style="-webkit-user-select: none;height:30px; " src="./images/twitter.svg"></a>
+         <a href="https://www.instagram.com/barwabankqatar/">   <img style="-webkit-user-select: none;height:30px; " src="./images/instagram.svg"></a>
+          <a href="#">  <img style="-webkit-user-select: none;height:30px;  " src="./images/linkedin.svg"></a>
+            </div> 
+              
+            <div id = "rightbox" style= "float:right;width:33%; text-align:left;   height:40px; padding-top:30px;	" > 
+                        
+		
+		<img style="-webkit-user-select: none;  width:20px; vertical-align: middle;float:left;" src="./images/phone.png">    <strong>&nbsp;&nbsp;<label style= "margin-left:5px;">800 8555</strong></label>
+		
+		
+			            </div> 
+			
+			 <div > 
+            <img style="-webkit-user-select: none;   padding-top:10px;" src="./images/borderbottom.png">
+         
+            </div>  
+              
+       <div style="text-align:left; color:#002d74;font-family:diodrum; line-height:15px; font-size:13px; margin-left:30px; padding-right:20px;padding-top:20px;"> 
+
+            </div>  
+			
+        </div> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    
+    </form>
+	</div>  
+</div>
+
+   
+</body>
+</html>

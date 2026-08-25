@@ -1,0 +1,619 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=10" />
+<link rel="stylesheet" href="css/style3.css" type="text/css" media="screen"/>
+<script src="jquery.min.js" language="javascript" type="text/javascript"></script>
+<script type="text/javascript" src="toword.js"></script>
+
+<!-- Add fancyBox main JS and CSS files -->
+	<script type="text/javascript" src="source/jquery.fancybox.js?v=2.1.5"></script>
+	<link rel="stylesheet" type="text/css" href="source/jquery.fancybox.css?v=2.1.5" media="screen" />
+
+		<script>
+        function check(){
+		if(document.getElementById("terms").checked == true){document.getElementById("print").style.display='block';}else{document.getElementById("print").style.display='none';}	
+			
+			}
+			
+			  function check2(){
+		if(document.getElementById("otherscheck").checked == true){document.getElementById("others").style.display='block';}else{document.getElementById("others").style.display='none';}	
+			
+			}
+        </script>
+		
+ <script type="text/javascript">// <![CDATA[
+    function iban() {
+        var x = document.getElementById("debit").value;
+     
+            var static_bank_code = "BRWA";
+            var static_zeroes = "000000000";
+            var static_country_code = "QA";
+            
+            var tempIBAN = static_bank_code + static_zeroes + x + static_country_code + "00";
+            var asciiIBAN = "";
+            for (i = 0; i < static_bank_code.length; i++) {
+                asciiIBAN += String(Number(static_bank_code[i].charCodeAt(0)) - 55);                
+            }            
+            asciiIBAN += static_zeroes + x;
+            for (i = 0; i < static_country_code.length; i++) {
+                asciiIBAN += String(Number(static_country_code[i].charCodeAt(0)) - 55);
+            }
+            asciiIBAN += "00";
+            
+            var first9digitMod = Number(asciiIBAN.substring(0, 9)) % 97;
+            if (String(first9digitMod).length < 2) {
+                first9digitMod = "0" + String(first9digitMod);
+            }
+            //alert(first9digitMod);
+            var second9digitMod = Number(first9digitMod + asciiIBAN.substring(9, 16)) % 97;
+            if (String(second9digitMod).length < 2) {
+                second9digitMod = "0" + String(second9digitMod);
+            }
+            //alert(second9digitMod);
+            var third9digitMod = Number(second9digitMod + asciiIBAN.substring(16, 23)) % 97;
+            if (String(third9digitMod).length < 2) {
+                third9digitMod = "0" + String(third9digitMod);
+            }
+            //alert(third9digitMod);
+            var fourth9digitMod = Number(third9digitMod + asciiIBAN.substring(23, 30)) % 97;
+            if (String(fourth9digitMod).length < 2) {
+                fourth9digitMod = "0" + String(fourth9digitMod);
+            }
+            //alert(fourth9digitMod);
+            var fifth9digitMod = Number(fourth9digitMod + asciiIBAN.substring(30, asciiIBAN.length)) % 97;
+            if (String(fifth9digitMod).length < 2) {
+                fifth9digitMod = "0" + String(fifth9digitMod);
+            }
+            //alert(fifth9digitMod);
+
+            var checkDigits = 98 - Number(fifth9digitMod);
+            if (String(checkDigits).length < 2) {
+                checkDigits = "0" + String(checkDigits);
+            }
+
+            //alert(checkDigits);
+
+            var validIBAN = static_country_code + checkDigits + static_bank_code + static_zeroes + x;
+
+
+            document.getElementById("ibanad").value = validIBAN;
+        
+    }
+</script>
+        
+        
+		
+   <script>
+
+
+function validateRadio (radios)
+{
+    for (i = 0; i < radios.length; ++ i)
+    {
+        if (radios [i].checked) return true;
+    }
+    alert('Choose On Beneficiary or On Customer');
+	return false;
+	
+}
+   
+   
+     function required(inputtxt)   
+   {  
+   
+
+     if (inputtxt.value.length == 0)  
+      {   
+         alert("All fields are required!"); 
+		 inputtxt.focus();        
+         return false;   
+      }else{
+	return true;
+    }  
+   }
+
+   
+   function allLetter(inputtxt)  
+  {  
+   var letters = /^[A-Za-z]+$/; 
+   if(inputtxt.value.match(letters))  
+     {  
+      return true;  
+     }  
+   else  
+     {  
+     alert("Please input alphabetical characters only");
+	inputtxt.focus();   
+     return false;  
+     }  
+  }  
+
+
+function allnumeric(inputtxt)  
+   {  
+      var numbers = /^[0-9]+$/;  
+      if(inputtxt.value.match(numbers))  
+      {  
+ return true;  
+      }  
+      else  
+      {  
+      alert('Please input numeric characters only');  
+      inputtxt.focus();  
+      return false;  
+      }  
+   } 
+   
+   function CheckDecimal(inputtxt)   
+{   
+var decimal=  /^[-+]?[0-9]+.[0-9]+$/;   
+if(inputtxt.value.match(decimal))   
+{   
+return true;  
+}  
+else  
+{   
+alert('Please input numeric characters only') ;
+ inputtxt.focus();   
+return false;  
+}  
+}   
+ 
+
+
+function printnow(){
+	var figures = document.application.figures;  
+//var words= document.application.words;  
+var bname = document.application.bname;  
+
+
+
+var pp = document.application.pp;
+
+
+
+var pname = document.application.pname;
+var tel = document.application.tel;
+var debit = document.application.debit;
+
+if( required(figures) && CheckDecimal(figures))  
+{
+ 
+	  
+	   if(required(bname)) {
+
+		  // Validate Purpose Codes (QCB Mandate)
+		  var mainPurpose = document.getElementById("main_purpose");
+		  var subPurpose = document.getElementById("sub_purpose");
+
+		  if (!mainPurpose.value) {
+			  alert('Payment Purpose (Regulatory Requirement) is required');
+			  mainPurpose.focus();
+			  return false;
+		  }
+
+		  if (!subPurpose.value) {
+			  alert('Payment Details is required');
+			  subPurpose.focus();
+			  return false;
+		  }
+
+		  if(required(pname))
+		  {
+			  
+			   if(required(debit) && allnumeric(debit))
+		  {
+			  
+		  if(required(tel) && allnumeric(tel))
+		  {
+			  
+		 
+		     // alert('correct');
+			  return true;
+		 
+		 
+		
+		
+		  }
+		  }
+		  }
+		  } 	
+}
+
+return false;
+	
+	}
+	function capitaliseFirstLetter(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
+	
+	function getwords(){ 
+		var str = document.getElementById('figures').value;
+		
+		
+		if(str.indexOf(".")==-1){
+			
+			
+			var fig = parseInt(str);
+			var convfig=toWords(fig);
+		
+		convfig=capitaliseFirstLetter(convfig);
+
+	
+		}else{
+			var res = str.split(".");
+	
+	var fig0 = parseInt(res[0]);
+	var fig1 = parseInt(res[1]);
+
+	var convfig0=toWords(fig0);var convfig1=toWords(fig1);
+		var convfig=convfig0+" and "+convfig1+ "DH";
+		convfig=capitaliseFirstLetter(convfig);
+			}
+	
+	
+	 document.getElementById('words').value=convfig;
+	}
+   
+   
+</script>
+
+<script type="text/javascript" language="javascript">
+		$("document").ready(function(){
+    $('#dynamic-select').bind('change', function () { // bind change event to select
+        var url = $(this).val(); // get selected value
+        if (url != '') { // require a URL
+            window.location = url; // redirect
+        }
+        return false;
+    });
+	
+	$("#single_image").fancybox();
+	
+		 var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+
+var yyyy = today.getFullYear();
+if(dd<10){dd='0'+dd} if(mm<10){mm='0'+mm} today = dd+'/'+mm+'/'+yyyy;
+document.getElementById('dato').innerHTML = today;
+ $('#currentdate').val(today);
+
+	 });
+
+    // QCB Purpose Code Mapping for Individual Customers
+    var purposeMapping = {
+        "10": [
+            {code: "101000", name: "Family & Friends Payments"},
+            {code: "101001", name: "Transfer to Own Account"},
+            {code: "101002", name: "Personal Settlements"},
+            {code: "101003", name: "Credit Card Payments"},
+            {code: "101004", name: "Pre-Paid Cards and E-Wallet Top Up"},
+            {code: "101005", name: "E-Wallet Cash-Out"},
+            {code: "101006", name: "Standing Order"}
+        ],
+        "11": [
+            {code: "111050", name: "Online Orders / Purchases"},
+            {code: "111051", name: "Insurance Services"},
+            {code: "111052", name: "Construction, Maintenance & Consulting Services"},
+            {code: "111053", name: "Rent Payments"},
+            {code: "111054", name: "Automobile Services (Including Automobile Repair and Maintenance)"},
+            {code: "111055", name: "POS Purchases"}
+        ],
+        "12": [
+            {code: "121100", name: "School/University Fees"},
+            {code: "121101", name: "Tutoring Sessions"},
+            {code: "121102", name: "Training Courses"}
+        ],
+        "13": [
+            {code: "131150", name: "Doctor Consultations"},
+            {code: "131151", name: "Medical Tests & Treatments"}
+        ],
+        "14": [
+            {code: "141200", name: "Transportation Fees"},
+            {code: "141201", name: "Travel & Tourism Fees"},
+            {code: "141202", name: "Accommodation Fees"},
+            {code: "141203", name: "Visa and Ticket Expenses"}
+        ],
+        "15": [
+            {code: "151250", name: "Salaries and Wages"},
+            {code: "151251", name: "Other Allowances (Travel Allowance, Leave Encashment)"},
+            {code: "151252", name: "Bonus Payments"}
+        ],
+        "16": [
+            {code: "161300", name: "Investment in Real Estate"},
+            {code: "161301", name: "Investment in Shares/Equities/Bonds"},
+            {code: "161302", name: "Other Investments"}
+        ],
+        "17": [
+            {code: "171350", name: "Zakat"}
+        ],
+        "18": [
+            {code: "181400", name: "Subscriptions (Internet, Mobile, etc.)"},
+            {code: "181401", name: "Utility Bills (Electricity, Water, Gas, Cooling)"}
+        ],
+        "19": [
+            {code: "191450", name: "Loan & Interest Payments"},
+            {code: "191451", name: "General Insurance"},
+            {code: "191452", name: "Cash Remittance"},
+            {code: "191453", name: "Fees and Commissions"}
+        ],
+        "20": [
+            {code: "201500", name: "Government Services"},
+            {code: "201501", name: "Courts Payments"},
+            {code: "201502", name: "Tax Payments"},
+            {code: "201503", name: "Customs Payments"}
+        ]
+    };
+
+    function updateSubPurpose() {
+        var mainPurpose = document.getElementById("main_purpose").value;
+        var subPurposeSelect = document.getElementById("sub_purpose");
+
+        // Clear existing options
+        subPurposeSelect.innerHTML = '<option value="">Select Payment Details</option>';
+
+        if (mainPurpose && purposeMapping[mainPurpose]) {
+            var subPurposes = purposeMapping[mainPurpose];
+            for (var i = 0; i < subPurposes.length; i++) {
+                var option = document.createElement("option");
+                option.value = subPurposes[i].code;
+                option.text = subPurposes[i].name;
+                subPurposeSelect.appendChild(option);
+            }
+        }
+    }
+
+</script>
+<title>Funds Transfer - Individual (DRAFT)</title>
+
+
+</head>
+
+<body>
+
+ <div id="wrapper"> 
+	<div id="insidewraper">
+    
+    <form name="application" action="tcpdf/examples/barwa3.php" method="post" onsubmit="return  printnow()">
+   
+     <div id="header">
+       <div style="position:absolute; left:20px; top:30px;"><img src="./images/logo.png" alt="Dukhan Bank" style="height:60px;"></div>
+       <div style="position:absolute; right:0;  top:30px;"><a href="index3ar_individual.html">العربية</a></div>
+
+	 			</br>
+			</br>
+	</br>
+	
+     <div id="dato" style="position:absolute; right:0;  top:170px;font-family:'Tahoma'; font-size:14px; color:#223570;"></div>
+     </div>
+        <div id="pagetitle"><h2 style="padding-left:40px;">Fund Transfer – Individual -  Manager Cheque</h2></div>
+     <div id="title"><h1 style="padding-left:40px;">Please Issue</h1></div>
+       <div id="first" style="height:20px;"><input type="hidden" name="currentdate" id="currentdate" /></div>  
+         <div id="second" style="height:575px;">
+         
+         <div id="issue"> <div><label class="bold special" style="width:250px;">&nbsp;</label><select style="width:300px;" id="dynamic-select" name="issue">
+         <option value="index.html">Internal Transfer Within Dukhan Bank</option>
+       <option value="index2_individual.html" >Electronic Payment</option>
+       <option value="index3_individual.html" selected="selected">Manager Cheque</option>
+         </select></div>
+         
+       
+         
+         </div>
+         
+         
+          <div id="payment" style="margin-top:0px;">
+         <div id="title2"><h1>Payment and Beneficiary Details</h1></div>
+          <div>
+          
+                 <span> <label class="special" >Currency</label><input type="text" id="currency" name="currency" style="width:400px;" value="QAR" readonly="readonly"/></span>
+            <span> <label class="special">Amount</label><input type="text" id="figures" name="figures" style="width:400px;" /></span>
+             <span> <label class="special">Amount in Words</label><input type="text"  id="words" name="words" style="width:400px;" /></span> 
+             <span> <label class="special">Beneficiary Name</label><input type="text" name="bname" style="width:400px;" /></span>
+       
+           <!--    <span> <label class="special">BLZ / ABA: </label><select name="blz"><option value="Type1">Loan Payment</option><option value="Type2">Salary Payment</option><option value="Type2">Supplier Payment</option></select>  <label><input id="otherscheck" type="checkbox" name="terms" style=" width:20px; border:none; height:12px;" onclick="check2()"  />Others</label><input id="others" type="text" name="amount" style="width:100px; display:none; float:right; margin-right:260px;" /></span> -->
+           
+               
+                             <span> <label class="special">Payment Purpose (Regulatory Requirement)</label>
+                             <select name="main_purpose" id="main_purpose" onchange="updateSubPurpose()">
+								<option value="">Select Main Purpose</option>
+								<option value="10">Personal and Family Expenses</option>
+								<option value="11">Goods & Services</option>
+								<option value="12">Education and Training</option>
+								<option value="13">Medical Expenses</option>
+								<option value="14">Entertainment (Travel & Tourism)</option>
+								<option value="15">Salaries and Wages Expenses</option>
+								<option value="16">Investments</option>
+								<option value="18">Bill Payments</option>
+								<option value="19">Financial Services</option>
+								<option value="20">Government Services</option>
+							</select>
+                             </span>
+                             <span> <label class="special">Payment Details</label>
+                             <select name="sub_purpose" id="sub_purpose">
+								<option value="">Select Payment Details</option>
+							</select>
+                             </span>
+          
+          </div>
+          
+          </div>
+          
+          
+          
+          
+          
+          
+          
+          <div id="payment" style="clear:both" >
+        
+          <div class="left">
+          
+      <div id="title3" style="border-right:#FFF solid 1px; width:499px;"><h1>Applicant Details</h1></div>
+          <div style="border-right:#e3e6e8 solid 1px;  margin-top:0px; height:140px;">
+          
+         <span style="padding-top:10px;"> <label class="small">Name</label><input type="text" name="pname"/></span>
+         <span> <label style="display:block">Debit my Account No</label><input type="text" name="debit" id="debit" style="width:400px; margin-top:10px;"  /></span>
+            <span> <label class="small">Tel / Mobile Number</label><input type="text" name="tel" /></span>
+ 
+ 
+          
+          </div>
+          
+          </div>
+          
+           <div class="left">
+          
+      <div id="title3" ><h1>For Bank Use Only</h1></div>
+          <div>
+          
+        
+         
+ <span> <label class="small">Reference No</label><input type="text" name="number" readonly="readonly" /></span>
+           
+          </div>
+          
+          </div>
+          
+          </div>
+          
+         
+          
+          <div id="payment" style="clear:both; margin-top:0px;">
+        
+          <div class="left" style=" margin-top:0px;border-top:#e3e6e8 solid 1px;">
+          
+      
+          <div style="border-right:#e3e6e8 solid 1px;  margin-top:0px; height:50px;">
+          
+         <span style="padding-top:10px;"> <label>Applicant's Signature</label></span>
+                      </div>
+          
+          </div>
+          
+            <div class="left" style=" margin-top:0px;">
+          
+      
+          <div style="margin-left:0px;  margin-top:0px; height:50px;border-top:#e3e6e8 solid 1px;">
+          
+        
+        <div style="width:249px;border-right:#e3e6e8 solid 1px; float:left; height:50px; background:#fff;margin-left:0px;margin-top:0px; ">
+        <span style="padding-top:10px; margin-left:10px;"> <label>Reviewed By </label></span>
+        </div>
+        <div style="width:250px; float:left; height:50px; background:#fff;margin-left:0px;margin-top:0px; ">
+         <span style="padding-top:10px;margin-left:10px;"> <label>Authorized By </label></span>
+        </div>
+        
+                      </div>
+          
+          </div>
+          
+          </div>
+          
+          
+          
+         
+         
+         
+         </div> 
+ 
+        
+
+<div style="height:30px; margin-top:20px;float:left;"><input id="terms" type="checkbox" name="terms" style=" width:30px; border:none;" onclick="check()"  /><label style="text-decoration:underline">I Accept The Terms and Conditions</label></div></br>
+<div id="print" style="height:30px; display:none; margin-left:25px;font-family:'Tahoma'; font-size:14px; color:#223570;" >
+<p>I / We accept that the Bank’s General Terms and Conditions for the Operation of Accounts and Electronic Banking Services are applicable to payments and transfers. I / We understand and fully accept that the Bank shall only process this funds transfer instruction as per the information PRINTED in this Form, and shall disregard any hand written amendment and/or insertions made to the printed form.  I further accept that Dukhan Bank will use the account number provided as the basis for the payment and will not check or refer to the beneficiary name or other beneficiary details provided.</p>
+<input type="submit" class="submit" value="Print" /></div>
+
+
+
+</br>
+</br>
+</br>
+</br>
+</br>
+
+
+
+		  
+
+<div id = "boxes" > 
+          
+		  			
+			<div id = "line" style= "float:right;width:100%;  padding-top:10;  height:3px; " > 
+       
+            </div> 
+	
+			 <div id = "leftbox" style= "float:left;width:33%;  height:40px;text-align:right;padding-top:30px;"> 
+                <label class="bold">dukhanbank.com</label>
+         
+            </div>  
+              
+            <div id = "middlebox"style= "float:left; width:33%;  height:40px;   padding-top:20px;"> 
+         <a href="https://www.facebook.com/BarwaBankGroup">   <img style="-webkit-user-select: none;height:30px; " src="./images/facebook.svg"></a>
+         <a href="https://twitter.com/BarwaBankQatar">   <img style="-webkit-user-select: none;height:30px; " src="./images/twitter.svg"></a>
+         <a href="https://www.instagram.com/barwabankqatar/">   <img style="-webkit-user-select: none;height:30px; " src="./images/instagram.svg"></a>
+          <a href="#">  <img style="-webkit-user-select: none;height:30px;  " src="./images/linkedin.svg"></a>
+            </div> 
+              
+            <div id = "rightbox" style= "float:right;width:33%; text-align:left;   height:40px; padding-top:30px;	" > 
+                        
+		
+		<img style="-webkit-user-select: none;  width:20px; vertical-align: middle;float:left;" src="./images/phone.png">    <strong>&nbsp;&nbsp;<label style= "margin-left:5px;">800 8555</strong></label>
+		
+		
+			            </div> 
+			
+			 <div > 
+            <img style="-webkit-user-select: none;   padding-top:10px;" src="./images/borderbottom.png">
+         
+            </div>  
+              
+       <div style="text-align:left; color:#002d74;font-family:diodrum; line-height:15px; font-size:13px; margin-left:30px; padding-right:20px;padding-top:20px;"> 
+
+            </div>  
+			
+        </div> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        </div>
+    
+    </form>
+	</div>  
+</div>
+
+   
+</body>
+</html>
+
